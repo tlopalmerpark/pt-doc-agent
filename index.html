@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PT Documentation Agent</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F7F4EF;
+    --warm-white: #FDFCFA;
+    --ink: #1C1917;
+    --ink-soft: #44403C;
+    --ink-muted: #78716C;
+    --teal: #0F766E;
+    --teal-light: #CCFBF1;
+    --teal-mid: #5EEAD4;
+    --amber: #B45309;
+    --amber-light: #FEF3C7;
+    --red-soft: #FEF2F2;
+    --red: #DC2626;
+    --border: #E7E3DC;
+    --border-strong: #C9C3B8;
+    --shadow: 0 1px 3px rgba(28,25,23,0.08), 0 4px 16px rgba(28,25,23,0.04);
+    --shadow-lg: 0 4px 24px rgba(28,25,23,0.12), 0 1px 4px rgba(28,25,23,0.06);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--ink);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.25rem;
+    color: var(--cream);
+    letter-spacing: -0.01em;
+  }
+  .logo span { color: var(--teal-mid); }
+  .header-badge {
+    font-size: 11px;
+    background: rgba(94,234,212,0.15);
+    color: var(--teal-mid);
+    border: 1px solid rgba(94,234,212,0.25);
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  /* ── Layout ── */
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 4rem;
+  }
+
+  /* ── API Key Banner ── */
+  .api-banner {
+    background: var(--amber-light);
+    border: 1px solid #FDE68A;
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  .api-banner .icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .api-banner p { font-size: 13px; color: var(--amber); line-height: 1.5; }
+  .api-banner strong { font-weight: 500; }
+  .api-key-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 0.5rem;
+  }
+  .api-key-row input {
+    flex: 1;
+    font-size: 13px;
+    padding: 6px 10px;
+    border: 1px solid #FDE68A;
+    border-radius: 6px;
+    background: #FFFBEB;
+    color: var(--ink);
+    font-family: monospace;
+  }
+  .api-key-row button {
+    font-size: 12px;
+    padding: 6px 14px;
+    background: var(--amber);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  /* ── Note Type Selector ── */
+  .note-type-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-muted);
+    font-weight: 500;
+    margin-bottom: 0.75rem;
+  }
+  .note-tabs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 2rem;
+  }
+  .note-tab {
+    background: var(--warm-white);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.875rem 0.75rem;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.18s;
+  }
+  .note-tab:hover { border-color: var(--border-strong); background: #F9F7F3; }
+  .note-tab.active {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--cream);
+  }
+  .note-tab .tab-icon { font-size: 18px; margin-bottom: 4px; display: block; }
+  .note-tab .tab-name { font-size: 13px; font-weight: 500; display: block; }
+  .note-tab .tab-time { font-size: 11px; opacity: 0.6; margin-top: 2px; display: block; }
+
+  /* ── Form Card ── */
+  .form-card {
+    background: var(--warm-white);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.75rem;
+    box-shadow: var(--shadow);
+    margin-bottom: 1.5rem;
+  }
+  .form-card h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.375rem;
+    font-weight: 400;
+    color: var(--ink);
+    margin-bottom: 0.25rem;
+  }
+  .form-card .subtitle {
+    font-size: 13px;
+    color: var(--ink-muted);
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+  }
+
+  .form-section { display: none; }
+  .form-section.active { display: block; }
+
+  .field-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  .field-grid.three { grid-template-columns: 1fr 1fr 1fr; }
+  .field-full { margin-bottom: 1rem; }
+
+  .field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-muted);
+    margin-bottom: 5px;
+  }
+  .field input, .field select, .field textarea {
+    width: 100%;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 9px 12px;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    outline: none;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus {
+    border-color: var(--teal);
+    box-shadow: 0 0 0 3px rgba(15,118,110,0.1);
+  }
+  .field textarea { min-height: 80px; resize: vertical; line-height: 1.5; }
+  .field input::placeholder, .field textarea::placeholder { color: var(--border-strong); }
+
+  .section-divider {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-muted);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 1.25rem 0 1rem;
+  }
+  .section-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── Generate Button ── */
+  .btn-generate {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--teal);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 24px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.18s;
+    margin-top: 0.5rem;
+  }
+  .btn-generate:hover { background: #0D6B63; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(15,118,110,0.3); }
+  .btn-generate:active { transform: translateY(0); }
+  .btn-generate:disabled { background: var(--ink-muted); cursor: not-allowed; transform: none; box-shadow: none; }
+  .btn-generate .spinner {
+    width: 16px; height: 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+  }
+  .btn-generate.loading .spinner { display: block; }
+  .btn-generate.loading .btn-text::after { content: '...'; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Output Card ── */
+  .output-card {
+    background: var(--warm-white);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    display: none;
+    animation: slideUp 0.3s ease;
+  }
+  .output-card.visible { display: block; }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .output-header {
+    background: var(--ink);
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .output-header .output-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.1rem;
+    color: var(--cream);
+    font-weight: 400;
+  }
+  .output-header .output-meta {
+    font-size: 12px;
+    color: rgba(247,244,239,0.5);
+    margin-top: 2px;
+  }
+  .output-actions {
+    display: flex;
+    gap: 8px;
+  }
+  .btn-action {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    padding: 6px 14px;
+    border-radius: 6px;
+    border: 1px solid rgba(247,244,239,0.2);
+    background: transparent;
+    color: rgba(247,244,239,0.8);
+    cursor: pointer;
+    transition: all 0.15s;
+    font-weight: 500;
+  }
+  .btn-action:hover { background: rgba(247,244,239,0.1); color: var(--cream); }
+  .btn-action.print { background: rgba(94,234,212,0.15); border-color: rgba(94,234,212,0.3); color: var(--teal-mid); }
+  .btn-action.print:hover { background: rgba(94,234,212,0.25); }
+
+  .output-body {
+    padding: 1.75rem;
+    font-size: 14px;
+    line-height: 1.9;
+    color: var(--ink);
+    white-space: pre-wrap;
+    font-family: 'DM Sans', sans-serif;
+    max-height: 600px;
+    overflow-y: auto;
+  }
+  .output-body::-webkit-scrollbar { width: 6px; }
+  .output-body::-webkit-scrollbar-track { background: transparent; }
+  .output-body::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+
+  .output-footer {
+    padding: 0.875rem 1.5rem;
+    background: #F9F7F3;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--ink-muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* ── Status / Error ── */
+  .status-msg {
+    font-size: 13px;
+    color: var(--ink-muted);
+    margin-top: 8px;
+    min-height: 18px;
+  }
+  .status-msg.error { color: var(--red); }
+
+  /* ── HIPAA Banner ── */
+  .hipaa-banner {
+    background: var(--red-soft);
+    border: 1px solid #FECACA;
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    margin-top: 2rem;
+    font-size: 13px;
+    color: #991B1B;
+    line-height: 1.5;
+  }
+  .hipaa-banner strong { font-weight: 500; }
+
+  /* ── Print styles ── */
+  @media print {
+    header, .api-banner, .note-tabs, .form-card, .output-actions,
+    .output-footer, .hipaa-banner, .note-type-label { display: none !important; }
+    .output-card { display: block !important; box-shadow: none; border: none; }
+    .output-header { background: white; }
+    .output-header .output-title { color: black; }
+    .output-header .output-meta { color: #666; }
+    .output-body { max-height: none; font-size: 13px; }
+  }
+
+  @media (max-width: 600px) {
+    .note-tabs { grid-template-columns: 1fr 1fr; }
+    .field-grid { grid-template-columns: 1fr; }
+    .field-grid.three { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">PT<span>Doc</span> Agent</div>
+  <div class="header-badge">Clinical AI</div>
+</header>
+
+<div class="container">
+
+  <!-- API Key Banner -->
+  <div class="api-banner" id="api-banner">
+    <div class="icon">🔑</div>
+    <div style="flex:1">
+      <p><strong>Enter your Anthropic API key to get started.</strong> This stays in your browser and is never stored anywhere.</p>
+      <div class="api-key-row">
+        <input type="password" id="api-key-input" placeholder="sk-ant-api03-..." autocomplete="off">
+        <button onclick="saveApiKey()">Save Key</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Note Type Tabs -->
+  <p class="note-type-label">Select note type</p>
+  <div class="note-tabs">
+    <div class="note-tab active" onclick="switchTab('eval', this)">
+      <span class="tab-icon">📋</span>
+      <span class="tab-name">Initial Eval</span>
+      <span class="tab-time">First visit</span>
+    </div>
+    <div class="note-tab" onclick="switchTab('soap', this)">
+      <span class="tab-icon">📝</span>
+      <span class="tab-name">SOAP Note</span>
+      <span class="tab-time">Daily visit</span>
+    </div>
+    <div class="note-tab" onclick="switchTab('progress', this)">
+      <span class="tab-icon">📈</span>
+      <span class="tab-name">Progress Note</span>
+      <span class="tab-time">Bi-weekly</span>
+    </div>
+    <div class="note-tab" onclick="switchTab('discharge', this)">
+      <span class="tab-icon">✅</span>
+      <span class="tab-name">Discharge</span>
+      <span class="tab-time">Final visit</span>
+    </div>
+  </div>
+
+  <!-- Form Card -->
+  <div class="form-card">
+
+    <!-- INITIAL EVALUATION -->
+    <div class="form-section active" id="section-eval">
+      <h2>Initial Evaluation</h2>
+      <p class="subtitle">Complete the patient information below. The AI will generate a full evaluation note with medical necessity language, SMART goals, and plan of care.</p>
+
+      <div class="section-divider">Patient information</div>
+      <div class="field-grid">
+        <div class="field"><label>Patient Name (or ID)</label><input id="e-name" placeholder="e.g. J. Doe or Patient #1042"></div>
+        <div class="field"><label>Age / Date of Birth</label><input id="e-age" placeholder="e.g. 52 y/o, DOB 01/15/1972"></div>
+      </div>
+      <div class="field-grid">
+        <div class="field"><label>Diagnosis / ICD-10 Code</label><input id="e-dx" placeholder="e.g. M54.5 – Low back pain"></div>
+        <div class="field"><label>Referring Physician</label><input id="e-md" placeholder="e.g. Dr. Smith, MD – Orthopedics"></div>
+      </div>
+      <div class="field-grid">
+        <div class="field"><label>Insurance / Payer</label><input id="e-ins" placeholder="e.g. Medicare Part B, Blue Cross"></div>
+        <div class="field"><label>Date of Injury / Onset</label><input id="e-onset" placeholder="e.g. 3 months ago, gradual onset"></div>
+      </div>
+
+      <div class="section-divider">Clinical findings</div>
+      <div class="field field-full"><label>Chief Complaint & Mechanism of Injury</label><textarea id="e-cc" placeholder="Patient reports gradual onset low back pain over 3 months following repetitive lifting at work. Pain radiates into left buttock but not below the knee..."></textarea></div>
+      <div class="field-grid">
+        <div class="field"><label>Pain Rating (0–10)</label><input id="e-pain" placeholder="e.g. 6/10 rest, 9/10 with bending"></div>
+        <div class="field"><label>Pain Quality</label><input id="e-pq" placeholder="e.g. aching, sharp with movement, stiff in AM"></div>
+      </div>
+      <div class="field field-full"><label>Functional Limitations (impact on ADLs, work, recreation)</label><textarea id="e-func" placeholder="Unable to sit more than 20 min, difficulty donning shoes/socks, cannot perform job duties requiring lifting >10 lbs, unable to walk dog more than 1 block..."></textarea></div>
+      <div class="field field-full"><label>Objective Findings (ROM, strength, posture, special tests)</label><textarea id="e-obj" placeholder="Lumbar AROM: Flexion 40° (N=60°, limited by pain), Extension 15° (N=25°), Lateral flexion 20° bilateral. MMT: Hip extensors 4/5 bilateral. SLR negative. Aberrant movement with forward bending..."></textarea></div>
+      <div class="field field-grid">
+        <div class="field"><label>Prior Level of Function (before injury)</label><input id="e-plof" placeholder="e.g. Independent all ADLs, full-time desk job, recreational tennis 2x/week"></div>
+        <div class="field"><label>Relevant Medical History</label><input id="e-pmh" placeholder="e.g. HTN, no prior PT, no surgeries"></div>
+      </div>
+      <div class="field-grid">
+        <div class="field"><label>Recommended Frequency</label><input id="e-freq" placeholder="e.g. 3x/week"></div>
+        <div class="field"><label>Duration</label><input id="e-dur" placeholder="e.g. 6 weeks"></div>
+      </div>
+    </div>
+
+    <!-- SOAP NOTE -->
+    <div class="form-section" id="section-soap">
+      <h2>Daily SOAP Note</h2>
+      <p class="subtitle">Document today's visit. The AI will write a complete SOAP note with skilled care justification and billing codes.</p>
+
+      <div class="section-divider">Visit details</div>
+      <div class="field-grid three">
+        <div class="field"><label>Patient Name / ID</label><input id="s-name" placeholder="J. Doe"></div>
+        <div class="field"><label>Visit Number</label><input id="s-visit" placeholder="e.g. Visit 5 of 18"></div>
+        <div class="field"><label>Diagnosis / ICD-10</label><input id="s-dx" placeholder="M54.5"></div>
+      </div>
+
+      <div class="section-divider">S — Subjective</div>
+      <div class="field field-full"><label>Patient's report today</label><textarea id="s-sub" placeholder="Patient reports pain improved to 4/10 at rest since last visit. Still 7/10 with prolonged sitting. States she was able to walk to mailbox without stopping for first time. Denies new symptoms..."></textarea></div>
+
+      <div class="section-divider">O — Objective</div>
+      <div class="field field-full"><label>Measurements & interventions performed</label><textarea id="s-obj" placeholder="Lumbar flexion 55° (improved from 40°). Performed: Therapeutic exercise x30 min (core stabilization, hip strengthening, neural mobility). Manual therapy x15 min (lumbar mobilization grade III-IV). E-stim to paraspinals x10 min. Patient demonstrated improved form with bridges and bird-dogs..."></textarea></div>
+
+      <div class="section-divider">A — Assessment & P — Plan</div>
+      <div class="field-grid">
+        <div class="field"><label>Response to treatment today</label><input id="s-resp" placeholder="e.g. Tolerated all interventions well, reported immediate pain relief with manual therapy"></div>
+        <div class="field"><label>Overall progress toward goals</label><input id="s-prog" placeholder="e.g. Steady progress, STG 1 at 60% achieved"></div>
+      </div>
+      <div class="field field-full"><label>Plan / changes to treatment</label><textarea id="s-plan" placeholder="Continue current POC. Will progress core stabilization to single-leg activities next visit. Patient educated on posture with prolonged sitting. HEP reviewed and updated..."></textarea></div>
+    </div>
+
+    <!-- PROGRESS NOTE -->
+    <div class="form-section" id="section-progress">
+      <h2>Progress Note</h2>
+      <p class="subtitle">Covers multiple visits. The AI will document measurable progress and include strong medical necessity language for continued PT authorization.</p>
+
+      <div class="section-divider">Reporting period</div>
+      <div class="field-grid">
+        <div class="field"><label>Patient Name / ID</label><input id="p-name" placeholder="J. Doe"></div>
+        <div class="field"><label>Dates / Visit Range</label><input id="p-dates" placeholder="e.g. Weeks 3–4, Visits 7–12"></div>
+      </div>
+      <div class="field-grid">
+        <div class="field"><label>Diagnosis</label><input id="p-dx" placeholder="M54.5 – Low back pain"></div>
+        <div class="field"><label>Insurance / Payer</label><input id="p-ins" placeholder="Medicare, Blue Cross, etc."></div>
+      </div>
+
+      <div class="section-divider">Goals & progress</div>
+      <div class="field field-full"><label>Short-term & long-term goals (from initial eval)</label><textarea id="p-goals" placeholder="STG 1: Reduce pain to ≤3/10 within 2 weeks — Status: MET (now 2/10)&#10;STG 2: Lumbar flexion to 55° within 2 weeks — Status: MET (now 58°)&#10;LTG 1: Return to full-time work within 6 weeks — IN PROGRESS&#10;LTG 2: Independent HEP with no complaints — IN PROGRESS"></textarea></div>
+      <div class="field field-full"><label>Objective measurements this period (compare to baseline)</label><textarea id="p-meas" placeholder="Pain: 2/10 rest (was 6/10), 5/10 activity (was 9/10)&#10;Lumbar flexion: 58° (was 40°, goal 60°)&#10;Sitting tolerance: 45 min (was 20 min)&#10;Walking distance: 3 blocks (was 1 block)&#10;Work tasks: Can lift 15 lbs (was unable to lift)"></textarea></div>
+      <div class="field field-full"><label>Remaining deficits & barriers to discharge</label><textarea id="p-barriers" placeholder="Persistent morning stiffness lasting >30 min. Unable to stand longer than 2 hours required for job duties. Hip strength still 4/5 bilaterally, needs 5/5. HEP compliance inconsistent on weekends..."></textarea></div>
+      <div class="field field-full"><label>Justification for continued skilled PT</label><textarea id="p-just" placeholder="Patient has not yet reached prior level of function. Job requires standing 8+ hours. Without continued skilled PT to address hip stabilization and work conditioning, risk of re-injury and functional decline is high. Patient requires skilled instruction in advanced progressive exercises..."></textarea></div>
+    </div>
+
+    <!-- DISCHARGE SUMMARY -->
+    <div class="form-section" id="section-discharge">
+      <h2>Discharge Summary</h2>
+      <p class="subtitle">Close out the episode of care. The AI will document final outcomes, goal achievement, HEP, and recommendations.</p>
+
+      <div class="section-divider">Episode overview</div>
+      <div class="field-grid">
+        <div class="field"><label>Patient Name / ID</label><input id="d-name" placeholder="J. Doe"></div>
+        <div class="field"><label>Total Visits / Duration</label><input id="d-visits" placeholder="e.g. 18 visits over 6 weeks"></div>
+      </div>
+      <div class="field-grid">
+        <div class="field"><label>Diagnosis</label><input id="d-dx" placeholder="M54.5 – Low back pain"></div>
+        <div class="field"><label>Discharge Status</label><input id="d-status" placeholder="e.g. Goals met, returning to full duty work"></div>
+      </div>
+
+      <div class="section-divider">Outcomes</div>
+      <div class="field field-full"><label>Final objective measurements (vs. initial)</label><textarea id="d-outcomes" placeholder="Pain: 1/10 rest, 2/10 with heavy activity (was 6/10 and 9/10)&#10;Lumbar flexion: 58° (was 40°)&#10;Sitting tolerance: 60+ min (was 20 min)&#10;Returned to full-time work including lifting up to 30 lbs&#10;Independent with all ADLs including recreational tennis"></textarea></div>
+      <div class="field field-full"><label>Goal achievement status</label><textarea id="d-goals" placeholder="STG 1 – Pain ≤3/10: MET (1/10 rest)&#10;STG 2 – Lumbar flexion 55°: MET (58°)&#10;LTG 1 – Return to full-time work: MET (returned at week 5)&#10;LTG 2 – Independent HEP: MET, performing 5x/week"></textarea></div>
+
+      <div class="section-divider">Discharge plan</div>
+      <div class="field field-full"><label>Home exercise program prescribed</label><textarea id="d-hep" placeholder="10-exercise program: lumbar stabilization (bridges, bird-dog, dead bug), hip strengthening (clamshells, SL deadlift), neural mobility (sciatic nerve flossing), and postural correction. Written and demonstrated. Return demo completed successfully..."></textarea></div>
+      <div class="field field-full"><label>Recommendations & follow-up</label><textarea id="d-rec" placeholder="Return to PT PRN if symptoms recur. Follow up with Dr. Smith in 6 weeks. Continue progressive return to tennis. Ergonomic workstation assessment recommended. No restrictions at this time..."></textarea></div>
+    </div>
+
+    <div style="display:flex; align-items:center; gap:1rem; flex-wrap:wrap; margin-top:0.5rem">
+      <button class="btn-generate" id="gen-btn" onclick="generate()">
+        <div class="spinner"></div>
+        <span class="btn-text">Generate Note</span>
+      </button>
+      <div class="status-msg" id="status-msg"></div>
+    </div>
+  </div>
+
+  <!-- Output -->
+  <div class="output-card" id="output-card">
+    <div class="output-header">
+      <div>
+        <div class="output-title" id="output-title">Generated Note</div>
+        <div class="output-meta" id="output-meta"></div>
+      </div>
+      <div class="output-actions">
+        <button class="btn-action print" onclick="window.print()">🖨 Print / Save PDF</button>
+        <button class="btn-action" onclick="copyNote()">Copy Text</button>
+      </div>
+    </div>
+    <div class="output-body" id="output-body"></div>
+    <div class="output-footer">
+      ⚠️ Review all AI-generated content before signing. This tool supports documentation — it does not replace clinical judgment.
+    </div>
+  </div>
+
+  <!-- HIPAA Notice -->
+  <div class="hipaa-banner">
+    <strong>HIPAA Notice:</strong> Do not enter real patient names, dates of birth, or other identifying information until you have a signed Business Associate Agreement (BAA) with Anthropic. Use patient initials or ID numbers only. To request a BAA, contact Anthropic at anthropic.com/contact.
+  </div>
+
+</div>
+
+<script>
+  // ── State ──
+  let currentTab = 'eval';
+  let apiKey = '';
+
+  // ── API Key ──
+  function saveApiKey() {
+    const val = document.getElementById('api-key-input').value.trim();
+    if (!val.startsWith('sk-ant-')) {
+      alert('That does not look like a valid Anthropic API key. It should start with sk-ant-');
+      return;
+    }
+    apiKey = val;
+    document.getElementById('api-banner').style.display = 'none';
+  }
+
+  // ── Tab Switching ──
+  function switchTab(tab, el) {
+    currentTab = tab;
+    document.querySelectorAll('.note-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('section-' + tab).classList.add('active');
+    document.getElementById('output-card').classList.remove('visible');
+    document.getElementById('status-msg').textContent = '';
+  }
+
+  // ── Helpers ──
+  function g(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
+  function today() { return new Date().toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' }); }
+
+  // ── Prompt Builder ──
+  function buildPrompt() {
+    const system = `You are a licensed physical therapist generating clinical documentation. Your notes must:
+
+MEDICAL NECESSITY LANGUAGE: Always include specific language establishing medical necessity:
+- Identify functional deficits and how they impact ADLs, work, and quality of life
+- State why skilled PT services (not just exercise) are required
+- Reference objective, measurable findings that justify the level of care
+- Use payer-compliant language (Medicare, commercial insurance standards)
+- Cite that without skilled intervention, the patient's condition would not reasonably improve
+
+DOCUMENTATION STANDARDS:
+- Use standard PT abbreviations (AROM, MMT, ADL, HEP, STG, LTG, WFL, WNL, etc.)
+- Write SMART goals: Specific, Measurable, Achievable, Relevant, Time-bound
+- Include relevant CPT codes at the bottom of each note
+- Note must be legally defensible and support insurance reimbursement
+- Use past tense for what was done, present for current status
+
+FORMAT: Use ALL CAPS section headers. Write in professional clinical prose. Be thorough but concise. Do not add any preamble or closing remarks outside the note itself.`;
+
+    const date = today();
+
+    if (currentTab === 'eval') {
+      return {
+        system,
+        user: `Generate a complete Initial Evaluation note. Today's date: ${date}
+
+PATIENT: ${g('e-name')} | AGE: ${g('e-age')}
+DIAGNOSIS: ${g('e-dx')}
+REFERRING MD: ${g('e-md')}
+INSURANCE: ${g('e-ins')}
+DATE OF INJURY/ONSET: ${g('e-onset')}
+CHIEF COMPLAINT & MOI: ${g('e-cc')}
+PAIN: ${g('e-pain')} | QUALITY: ${g('e-pq')}
+FUNCTIONAL LIMITATIONS: ${g('e-func')}
+OBJECTIVE FINDINGS: ${g('e-obj')}
+PRIOR LEVEL OF FUNCTION: ${g('e-plof')}
+PAST MEDICAL HISTORY: ${g('e-pmh')}
+RECOMMENDED FREQUENCY: ${g('e-freq')} x ${g('e-dur')}
+
+Include these sections: DATE OF SERVICE, PATIENT INFORMATION, REFERRAL INFORMATION, CHIEF COMPLAINT, HISTORY OF PRESENT ILLNESS, SYSTEMS REVIEW, OBJECTIVE EXAMINATION (ROM, Strength, Special Tests, Functional Assessment, Posture/Gait), ASSESSMENT (include medical necessity statement), SHORT-TERM GOALS (3–4 goals, 2–3 week timeframe), LONG-TERM GOALS (3–4 goals, discharge timeframe), PLAN OF CARE (frequency, duration, interventions list), THERAPIST SIGNATURE LINE, CPT CODES BILLED.`
+      };
+    }
+
+    if (currentTab === 'soap') {
+      return {
+        system,
+        user: `Generate a complete daily SOAP note. Today's date: ${date}
+
+PATIENT: ${g('s-name')} | ${g('s-visit')}
+DIAGNOSIS: ${g('s-dx')}
+SUBJECTIVE: ${g('s-sub')}
+OBJECTIVE (findings & interventions): ${g('s-obj')}
+RESPONSE TO TREATMENT: ${g('s-resp')}
+PROGRESS TOWARD GOALS: ${g('s-prog')}
+PLAN: ${g('s-plan')}
+
+Include these sections: DATE OF SERVICE, PATIENT/VISIT INFO, SUBJECTIVE, OBJECTIVE (include specific interventions with time and parameters, any measurements taken), ASSESSMENT (include skilled care justification and progress statement), PLAN, THERAPIST SIGNATURE LINE, CPT CODES BILLED. The Assessment must include a sentence stating why continued skilled PT is medically necessary.`
+      };
+    }
+
+    if (currentTab === 'progress') {
+      return {
+        system,
+        user: `Generate a complete Progress Note for insurance/authorization. Today's date: ${date}
+
+PATIENT: ${g('p-name')} | REPORTING PERIOD: ${g('p-dates')}
+DIAGNOSIS: ${g('p-dx')} | INSURANCE: ${g('p-ins')}
+ORIGINAL GOALS: ${g('p-goals')}
+OBJECTIVE MEASUREMENTS THIS PERIOD: ${g('p-meas')}
+REMAINING DEFICITS/BARRIERS: ${g('p-barriers')}
+JUSTIFICATION FOR CONTINUED PT: ${g('p-just')}
+
+Include these sections: DATE, PATIENT/REPORTING PERIOD, DIAGNOSIS, TREATMENT SUMMARY (brief overview of interventions this period), GOAL STATUS (table or list format — each goal with baseline, current status, and percent achieved), OBJECTIVE PROGRESS DATA (compare measurements to baseline and goals), CLINICAL IMPRESSION (why continued skilled PT is medically necessary — this section must be detailed and compelling for insurance review), UPDATED PLAN (any goal revisions, frequency changes, new interventions), THERAPIST SIGNATURE LINE, CPT CODES. This note may be reviewed by a payer for authorization — make the medical necessity argument strong.`
+      };
+    }
+
+    if (currentTab === 'discharge') {
+      return {
+        system,
+        user: `Generate a complete Discharge Summary. Today's date: ${date}
+
+PATIENT: ${g('d-name')} | TOTAL CARE: ${g('d-visits')}
+DIAGNOSIS: ${g('d-dx')} | DISCHARGE STATUS: ${g('d-status')}
+FINAL OUTCOMES (vs initial): ${g('d-outcomes')}
+GOAL STATUS: ${g('d-goals')}
+HOME EXERCISE PROGRAM: ${g('d-hep')}
+RECOMMENDATIONS: ${g('d-rec')}
+
+Include these sections: DATE OF DISCHARGE, PATIENT INFORMATION, EPISODE OF CARE SUMMARY, INITIAL vs. DISCHARGE STATUS (comparison table or parallel format), GOAL ACHIEVEMENT SUMMARY, FUNCTIONAL OUTCOMES, HOME EXERCISE PROGRAM (detail the program prescribed), PATIENT EDUCATION PROVIDED, DISCHARGE DISPOSITION & RECOMMENDATIONS, THERAPIST SIGNATURE LINE, FINAL CPT CODES. End with a clinical summary paragraph suitable for the referring physician.`
+      };
+    }
+  }
+
+  // ── Generate ──
+  async function generate() {
+    if (!apiKey) {
+      document.getElementById('status-msg').textContent = 'Please enter your API key at the top of the page first.';
+      document.getElementById('status-msg').className = 'status-msg error';
+      return;
+    }
+
+    const btn = document.getElementById('gen-btn');
+    const status = document.getElementById('status-msg');
+    const outputCard = document.getElementById('output-card');
+
+    btn.disabled = true;
+    btn.classList.add('loading');
+    status.textContent = 'Generating your note — this takes about 15–20 seconds…';
+    status.className = 'status-msg';
+    outputCard.classList.remove('visible');
+
+    try {
+      const prompt = buildPrompt();
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 1800,
+          system: prompt.system,
+          messages: [{ role: 'user', content: prompt.user }]
+        })
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error?.message || `API error ${response.status}`);
+      }
+
+      const data = await response.json();
+      const text = data.content.map(b => b.text || '').join('');
+
+      const titles = { eval: 'Initial Evaluation', soap: 'SOAP Note', progress: 'Progress Note', discharge: 'Discharge Summary' };
+      const patientId = g('e-name') || g('s-name') || g('p-name') || g('d-name') || 'Patient';
+
+      document.getElementById('output-title').textContent = titles[currentTab];
+      document.getElementById('output-meta').textContent = `${patientId} · Generated ${today()}`;
+      document.getElementById('output-body').textContent = text;
+      outputCard.classList.add('visible');
+      outputCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      status.textContent = 'Note generated. Review carefully before signing.';
+      status.className = 'status-msg';
+
+    } catch (err) {
+      status.textContent = 'Error: ' + err.message + ' — Check your API key and try again.';
+      status.className = 'status-msg error';
+    } finally {
+      btn.disabled = false;
+      btn.classList.remove('loading');
+    }
+  }
+
+  // ── Copy ──
+  async function copyNote() {
+    const text = document.getElementById('output-body').textContent;
+    try {
+      await navigator.clipboard.writeText(text);
+      const btn = event.target;
+      btn.textContent = '✓ Copied!';
+      setTimeout(() => btn.textContent = 'Copy Text', 2000);
+    } catch {
+      alert('Could not copy automatically. Select the text manually and press Ctrl+C.');
+    }
+  }
+</script>
+</body>
+</html>
