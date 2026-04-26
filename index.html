@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PT Documentation Agent — Healing Institute</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F7F4EF;
+    --warm-white: #FDFCFA;
+    --ink: #1C1917;
+    --ink-soft: #44403C;
+    --ink-muted: #78716C;
+    --teal: #0F766E;
+    --teal-light: #CCFBF1;
+    --teal-mid: #5EEAD4;
+    --amber: #B45309;
+    --amber-light: #FEF3C7;
+    --red-soft: #FEF2F2;
+    --red: #DC2626;
+    --border: #E7E3DC;
+    --border-strong: #C9C3B8;
+    --shadow: 0 1px 3px rgba(28,25,23,0.08), 0 4px 16px rgba(28,25,23,0.04);
+    --shadow-lg: 0 4px 24px rgba(28,25,23,0.12), 0 1px 4px rgba(28,25,23,0.06);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--ink); min-height: 100vh; font-size: 15px; line-height: 1.6; }
+
+  header { background: var(--ink); padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 60px; position: sticky; top: 0; z-index: 100; }
+  .logo { font-family: 'DM Serif Display', serif; font-size: 1.25rem; color: var(--cream); letter-spacing: -0.01em; }
+  .logo span { color: var(--teal-mid); }
+  .header-badge { font-size: 11px; background: rgba(94,234,212,0.15); color: var(--teal-mid); border: 1px solid rgba(94,234,212,0.25); padding: 3px 10px; border-radius: 20px; letter-spacing: 0.05em; text-transform: uppercase; font-weight: 500; }
+
+  .letterhead { background: white; padding: 1.25rem 1.5rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 3px solid #0F766E; }
+  .letterhead-info { font-family: 'DM Sans', sans-serif; font-size: 12px; color: #44403C; line-height: 1.7; }
+  .letterhead-info .practice-name { font-size: 15px; font-weight: 600; color: #0F766E; margin-bottom: 2px; font-family: 'DM Serif Display', serif; }
+  .letterhead-info a { color: #0F766E; text-decoration: none; }
+  .letterhead-logo { height: 180px; width: auto; object-fit: contain; }
+
+  .container { max-width: 860px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+
+  .api-banner { background: var(--amber-light); border: 1px solid #FDE68A; border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 2rem; display: flex; align-items: flex-start; gap: 0.75rem; }
+  .api-banner .icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .api-banner p { font-size: 13px; color: var(--amber); line-height: 1.5; }
+  .api-key-row { display: flex; gap: 8px; margin-top: 0.5rem; }
+  .api-key-row input { flex: 1; font-size: 13px; padding: 6px 10px; border: 1px solid #FDE68A; border-radius: 6px; background: #FFFBEB; color: var(--ink); font-family: monospace; }
+  .api-key-row button { font-size: 12px; padding: 6px 14px; background: var(--amber); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 500; font-family: 'DM Sans', sans-serif; }
+
+  .note-type-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-muted); font-weight: 500; margin-bottom: 0.75rem; }
+  .note-tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 2rem; }
+  .note-tab { background: var(--warm-white); border: 1px solid var(--border); border-radius: 10px; padding: 0.875rem 0.75rem; cursor: pointer; text-align: center; transition: all 0.18s; }
+  .note-tab:hover { border-color: var(--border-strong); }
+  .note-tab.active { background: var(--ink); border-color: var(--ink); color: var(--cream); }
+  .note-tab .tab-icon { font-size: 18px; margin-bottom: 4px; display: block; }
+  .note-tab .tab-name { font-size: 13px; font-weight: 500; display: block; }
+  .note-tab .tab-time { font-size: 11px; opacity: 0.6; margin-top: 2px; display: block; }
+
+  .form-card { background: var(--warm-white); border: 1px solid var(--border); border-radius: 14px; padding: 1.75rem; box-shadow: var(--shadow); margin-bottom: 1.5rem; }
+  .form-card h2 { font-family: 'DM Serif Display', serif; font-size: 1.375rem; font-weight: 400; color: var(--ink); margin-bottom: 0.25rem; }
+  .form-card .subtitle { font-size: 13px; color: var(--ink-muted); margin-bottom: 1.5rem; line-height: 1.5; }
+  .form-section { display: none; }
+  .form-section.active { display: block; }
+
+  .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+  .field-grid.three { grid-template-columns: 1fr 1fr 1fr; }
+  .field-full { margin-bottom: 1rem; }
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  .field label { display: block; font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-muted); margin-bottom: 5px; }
+  .field input, .field select, .field textarea { width: 100%; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--ink); background: var(--cream); border: 1px solid var(--border); border-radius: 8px; padding: 9px 12px; transition: border-color 0.15s, box-shadow 0.15s; outline: none; }
+  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(15,118,110,0.1); }
+  .field textarea { min-height: 70px; resize: vertical; line-height: 1.5; }
+  .field input::placeholder, .field textarea::placeholder { color: var(--border-strong); }
+
+  .section-divider { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-muted); font-weight: 500; display: flex; align-items: center; gap: 0.75rem; margin: 1.25rem 0 1rem; }
+  .section-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* ── Accordion ── */
+  .accordion { border: 1px solid var(--border); border-radius: 10px; margin-bottom: 0.75rem; overflow: hidden; }
+  .accordion-header { display: flex; align-items: center; justify-content: space-between; padding: 0.875rem 1rem; cursor: pointer; background: var(--warm-white); transition: background 0.15s; user-select: none; }
+  .accordion-header:hover { background: #F3F0EB; }
+  .accordion-header.open { background: var(--teal); color: white; }
+  .accordion-title { font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+  .accordion-icon { font-size: 16px; }
+  .accordion-chevron { font-size: 12px; transition: transform 0.2s; }
+  .accordion-header.open .accordion-chevron { transform: rotate(180deg); }
+  .accordion-body { display: none; padding: 1rem; background: #FDFCFA; border-top: 1px solid var(--border); }
+  .accordion-body.open { display: block; }
+
+  /* ── Body part accordion (level 2) ── */
+  .bp-accordion { border: 1px solid var(--border); border-radius: 8px; margin-bottom: 0.5rem; overflow: hidden; }
+  .bp-header { display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 0.875rem; cursor: pointer; background: white; transition: background 0.15s; font-size: 13px; font-weight: 500; color: var(--ink-soft); }
+  .bp-header:hover { background: var(--teal-light); }
+  .bp-header.open { background: var(--teal-light); color: var(--teal); }
+  .bp-chevron { font-size: 11px; transition: transform 0.2s; }
+  .bp-header.open .bp-chevron { transform: rotate(180deg); }
+  .bp-body { display: none; padding: 0.75rem; background: #F9F7F4; border-top: 1px solid var(--border); }
+  .bp-body.open { display: block; }
+
+  /* ── Movement rows ── */
+  .movement-row { display: grid; grid-template-columns: 160px 90px 1fr; gap: 8px; align-items: center; margin-bottom: 6px; }
+  .movement-label { font-size: 12px; color: var(--ink-soft); font-weight: 500; }
+  .movement-input { font-size: 13px; padding: 5px 8px; border: 1px solid var(--border); border-radius: 6px; background: white; color: var(--ink); font-family: 'DM Sans', sans-serif; width: 100%; text-align: center; }
+  .movement-input:focus { outline: none; border-color: var(--teal); }
+  .movement-note { font-size: 12px; padding: 5px 8px; border: 1px solid var(--border); border-radius: 6px; background: white; color: var(--ink); font-family: 'DM Sans', sans-serif; width: 100%; }
+  .movement-note:focus { outline: none; border-color: var(--teal); }
+  .movement-header-row { display: grid; grid-template-columns: 160px 90px 1fr; gap: 8px; margin-bottom: 4px; }
+  .movement-col-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-muted); font-weight: 500; }
+
+  /* ── MMT rows ── */
+  .mmt-row { display: grid; grid-template-columns: 200px 80px 80px 1fr; gap: 8px; align-items: center; margin-bottom: 6px; }
+  .mmt-label { font-size: 12px; color: var(--ink-soft); font-weight: 500; }
+  .mmt-select { font-size: 13px; padding: 5px 6px; border: 1px solid var(--border); border-radius: 6px; background: white; color: var(--ink); font-family: 'DM Sans', sans-serif; width: 100%; }
+  .mmt-select:focus { outline: none; border-color: var(--teal); }
+  .mmt-header-row { display: grid; grid-template-columns: 200px 80px 80px 1fr; gap: 8px; margin-bottom: 4px; }
+
+  /* ── Checkboxes for Posture/Gait/Balance ── */
+  .check-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px; }
+  .check-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-soft); }
+  .check-item input[type="checkbox"] { width: 15px; height: 15px; accent-color: var(--teal); cursor: pointer; }
+  .notes-field { width: 100%; font-size: 13px; padding: 7px 10px; border: 1px solid var(--border); border-radius: 6px; background: white; color: var(--ink); font-family: 'DM Sans', sans-serif; resize: vertical; min-height: 55px; margin-top: 8px; }
+  .notes-field:focus { outline: none; border-color: var(--teal); }
+  .notes-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-muted); font-weight: 500; margin-top: 8px; margin-bottom: 3px; display: block; }
+
+  /* ── Special tests ── */
+  .special-test-row { display: grid; grid-template-columns: 200px 120px 1fr; gap: 8px; align-items: center; margin-bottom: 6px; }
+  .st-label { font-size: 12px; color: var(--ink-soft); font-weight: 500; }
+  .st-select { font-size: 13px; padding: 5px 6px; border: 1px solid var(--border); border-radius: 6px; background: white; color: var(--ink); font-family: 'DM Sans', sans-serif; width: 100%; }
+  .st-select:focus { outline: none; border-color: var(--teal); }
+
+  /* Buttons */
+  .btn-generate { display: flex; align-items: center; gap: 8px; background: var(--teal); color: white; border: none; border-radius: 10px; padding: 12px 24px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500; cursor: pointer; transition: all 0.18s; margin-top: 0.5rem; }
+  .btn-generate:hover { background: #0D6B63; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(15,118,110,0.3); }
+  .btn-generate:disabled { background: var(--ink-muted); cursor: not-allowed; transform: none; box-shadow: none; }
+  .btn-generate .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; display: none; }
+  .btn-generate.loading .spinner { display: block; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .output-card { background: var(--warm-white); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow-lg); overflow: hidden; display: none; animation: slideUp 0.3s ease; }
+  .output-card.visible { display: block; }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  .output-header { background: var(--ink); padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+  .output-header .output-title { font-family: 'DM Serif Display', serif; font-size: 1.1rem; color: var(--cream); font-weight: 400; }
+  .output-header .output-meta { font-size: 12px; color: rgba(247,244,239,0.5); margin-top: 2px; }
+  .output-actions { display: flex; gap: 8px; }
+  .btn-action { font-family: 'DM Sans', sans-serif; font-size: 12px; padding: 6px 14px; border-radius: 6px; border: 1px solid rgba(247,244,239,0.2); background: transparent; color: rgba(247,244,239,0.8); cursor: pointer; transition: all 0.15s; font-weight: 500; }
+  .btn-action:hover { background: rgba(247,244,239,0.1); color: var(--cream); }
+  .btn-action.print { background: rgba(94,234,212,0.15); border-color: rgba(94,234,212,0.3); color: var(--teal-mid); }
+  .output-body { padding: 1.75rem; font-size: 14px; line-height: 1.9; color: var(--ink); white-space: pre-wrap; font-family: 'DM Sans', sans-serif; max-height: 600px; overflow-y: auto; }
+  .output-footer { padding: 0.875rem 1.5rem; background: #F9F7F3; border-top: 1px solid var(--border); font-size: 12px; color: var(--ink-muted); }
+  .status-msg { font-size: 13px; color: var(--ink-muted); margin-top: 8px; min-height: 18px; }
+  .status-msg.error { color: var(--red); }
+
+  .hipaa-banner { background: var(--red-soft); border: 1px solid #FECACA; border-radius: 10px; padding: 1rem 1.25rem; margin-top: 2rem; font-size: 13px; color: #991B1B; line-height: 1.5; }
+
+  @media print {
+    header, .api-banner, .note-tabs, .form-card, .output-actions, .output-footer, .hipaa-banner, .note-type-label, #status-msg, #api-banner, .letterhead { display: none !important; }
+    .print-letterhead { display: flex !important; align-items: center; justify-content: space-between; border-bottom: 2px solid #0F766E; padding: 0.75rem 1rem; margin-bottom: 0; }
+    .print-letterhead .lh-logo { height: 140px; width: auto; }
+    .print-letterhead .lh-info { font-size: 11px; color: #44403C; line-height: 1.7; }
+    .print-letterhead .lh-name { font-size: 14px; font-weight: 600; color: #0F766E; margin-bottom: 2px; }
+    .output-card { display: block !important; box-shadow: none; border: none; }
+    .output-header { background: white; border-bottom: 1px solid #ddd; }
+    .output-header .output-title { color: #1c1917; font-size: 1rem; }
+    .output-header .output-meta { color: #666; }
+    .output-body { max-height: none; font-size: 12px; padding: 1rem 1.5rem; }
+    body { background: white; }
+    .container { padding: 0; max-width: 100%; }
+  }
+  @media (max-width: 600px) {
+    .note-tabs { grid-template-columns: 1fr 1fr; }
+    .movement-row { grid-template-columns: 120px 70px 1fr; }
+    .mmt-row { grid-template-columns: 150px 65px 65px 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">PT<span>Doc</span> Agent</div>
+  <div class="header-badge">Clinical AI</div>
+</header>
+
+<div class="letterhead">
+  <div class="letterhead-info">
+    <div class="practice-name">Healing Institute of Physical Therapy</div>
+    <div>9100 E Hampton Dr #A2, Capitol Heights, MD 20743</div>
+    <div>📞 301-909-8409 &nbsp;|&nbsp; Fax: 833-415-2008</div>
+    <div><a href="mailto:admin@healinginstitutept.com">admin@healinginstitutept.com</a></div>
+  </div>
+  <img class="letterhead-logo" src="logo.png" alt="Healing Institute PT Logo">
+</div>
+
+<div class="container">
+
+  <div class="api-banner" id="api-banner">
+    <div class="icon">🔑</div>
+    <div style="flex:1">
+      <p><strong>Enter your Anthropic API key to get started.</strong> This stays in your browser and is never stored anywhere.</p>
+      <div class="api-key-row">
+        <input type="password" id="api-key-input" placeholder="sk-ant-api03-..." autocomplete="off">
+        <button onclick="saveApiKey()">Save Key</button>
+      </div>
+    </div>
+  </div>
+
+  <p class="note-type-label">Select note type</p>
+  <div class="note-tabs">
+    <div class="note-tab active" onclick="switchTab('eval', this)"><span class="tab-icon">📋</span><span class="tab-name">Initial Eval</span><span class="tab-time">First visit</span></div>
+    <div class="note-tab" onclick="switchTab('soap', this)"><span class="tab-icon">📝</span><span class="tab-name">SOAP Note</span><span class="tab-time">Daily visit</span></div>
+    <div class="note-tab" onclick="switchTab('progress', this)"><span class="tab-icon">📈</span><span class="tab-name">Progress Note</span><span class="tab-time">Bi-weekly</span></div>
+    <div class="note-tab" onclick="switchTab('discharge', this)"><span class="tab-icon">✅</span><span class="tab-name">Discharge</span><span class="tab-time">Final visit</span></div>
+  </div>
+
+  <div class="form-card">
+
+    <!-- ═══════════════════════════════════════ INITIAL EVALUATION ═══ -->
+    <div class="form-section active" id="section-eval">
+      <h2>Initial Evaluation</h2>
+      <p class="subtitle">Complete each section. Click any section header to expand or collapse it.</p>
+
+      <!-- Section 1: Patient & Visit (untitled) -->
+      <div class="field-grid" style="margin-bottom:1rem;">
+        <div class="field"><label>Patient Name / ID</label><input id="e-name" placeholder="e.g. J. Doe or Patient #1042"></div>
+        <div class="field"><label>Visit Date</label><input id="e-date" type="date"></div>
+      </div>
+      <div class="field-grid" style="margin-bottom:1.5rem;">
+        <div class="field"><label>Diagnosis / ICD-10 Code</label><input id="e-dx" placeholder="e.g. M54.5 – Low back pain"></div>
+        <div class="field"><label>Referring Physician</label><input id="e-md" placeholder="e.g. Dr. Smith, MD"></div>
+      </div>
+
+      <!-- Section 2: Clinical Findings (Subjective) -->
+      <div class="accordion">
+        <div class="accordion-header open" onclick="toggleAccordion(this)">
+          <div class="accordion-title"><span class="accordion-icon">📋</span> Clinical Findings (Subjective)</div>
+          <span class="accordion-chevron">▲</span>
+        </div>
+        <div class="accordion-body open">
+          <div class="field-full field"><label>Chief Complaint & Mechanism of Injury</label><textarea id="e-cc" placeholder="Patient reports gradual onset low back pain x 3 months after repetitive lifting at work..."></textarea></div>
+          <div class="field-grid">
+            <div class="field"><label>Pain Rating (0–10)</label><input id="e-pain" placeholder="e.g. 6/10 rest, 9/10 with bending"></div>
+            <div class="field"><label>Pain Quality</label><input id="e-pq" placeholder="e.g. aching, sharp with movement, stiff AM"></div>
+          </div>
+          <div class="field-full field"><label>Functional Limitations (ADLs, work, recreation)</label><textarea id="e-func" placeholder="Unable to sit more than 20 min, difficulty donning shoes/socks, cannot lift >10 lbs at work..."></textarea></div>
+          <div class="field-grid">
+            <div class="field"><label>Prior Level of Function</label><input id="e-plof" placeholder="e.g. Independent all ADLs, full-time work, recreational tennis"></div>
+            <div class="field"><label>Past Medical History</label><input id="e-pmh" placeholder="e.g. HTN, no prior PT, no surgeries"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Objective -->
+      <div class="accordion">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          <div class="accordion-title"><span class="accordion-icon">🔬</span> Objective Findings</div>
+          <span class="accordion-chevron">▼</span>
+        </div>
+        <div class="accordion-body">
+
+          <!-- Posture -->
+          <div class="bp-accordion">
+            <div class="bp-header" onclick="toggleBp(this)"><span>Posture Assessment</span><span class="bp-chevron">▼</span></div>
+            <div class="bp-body">
+              <div class="check-grid">
+                <label class="check-item"><input type="checkbox" id="post-forward-head"> Forward head posture</label>
+                <label class="check-item"><input type="checkbox" id="post-kyphosis"> Increased thoracic kyphosis</label>
+                <label class="check-item"><input type="checkbox" id="post-lordosis"> Increased lumbar lordosis</label>
+                <label class="check-item"><input type="checkbox" id="post-flat"> Flattened lumbar lordosis</label>
+                <label class="check-item"><input type="checkbox" id="post-scoliosis"> Scoliosis / lateral shift</label>
+                <label class="check-item"><input type="checkbox" id="post-shoulder"> Shoulder elevation / asymmetry</label>
+                <label class="check-item"><input type="checkbox" id="post-pelvis"> Pelvic tilt / asymmetry</label>
+                <label class="check-item"><input type="checkbox" id="post-wnl"> WNL — no significant deviations</label>
+              </div>
+              <span class="notes-label">Notes</span>
+              <textarea class="notes-field" id="post-notes" placeholder="Additional postural observations..."></textarea>
+            </div>
+          </div>
+
+          <!-- Gait -->
+          <div class="bp-accordion">
+            <div class="bp-header" onclick="toggleBp(this)"><span>Gait Assessment</span><span class="bp-chevron">▼</span></div>
+            <div class="bp-body">
+              <div class="check-grid">
+                <label class="check-item"><input type="checkbox" id="gait-antalgic"> Antalgic gait</label>
+                <label class="check-item"><input type="checkbox" id="gait-trendelenburg"> Trendelenburg gait</label>
+                <label class="check-item"><input type="checkbox" id="gait-steppage"> Steppage gait</label>
+                <label class="check-item"><input type="checkbox" id="gait-ataxic"> Ataxic gait</label>
+                <label class="check-item"><input type="checkbox" id="gait-reduced-arm"> Reduced arm swing</label>
+                <label class="check-item"><input type="checkbox" id="gait-reduced-stride"> Reduced stride length</label>
+                <label class="check-item"><input type="checkbox" id="gait-assistive"> Requires assistive device</label>
+                <label class="check-item"><input type="checkbox" id="gait-wnl"> WNL — no deviations noted</label>
+              </div>
+              <span class="notes-label">Assistive device / additional notes</span>
+              <textarea class="notes-field" id="gait-notes" placeholder="e.g. Uses single-point cane on right, walks with antalgic lean to left..."></textarea>
+            </div>
+          </div>
+
+          <!-- ROM -->
+          <div class="bp-accordion">
+            <div class="bp-header" onclick="toggleBp(this)"><span>Range of Motion (ROM)</span><span class="bp-chevron">▼</span></div>
+            <div class="bp-body">
+
+              <!-- Lumbar -->
+              <div class="bp-accordion" style="margin-bottom:6px;">
+                <div class="bp-header" onclick="toggleBp(this)"><span>Lumbar Spine</span><span class="bp-chevron">▼</span></div>
+                <div class="bp-body">
+                  <div class="movement-header-row"><span class="movement-col-label">Movement</span><span class="movement-col-label">Degrees °</span><span class="movement-col-label">Notes</span></div>
+                  <div class="movement-row"><span class="movement-label">Flexion</span><input class="movement-input" id="lum-flex" placeholder="60°"></div>
+                  <div class="movement-row"><span class="movement-label">Extension</span><input class="movement-input" id="lum-ext" placeholder="25°"></div>
+                  <div class="movement-row"><span class="movement-label">L Lateral Flexion</span><input class="movement-input" id="lum-lf-l" placeholder="25°"></div>
+                  <div class="movement-row"><span class="movement-label">R Lateral Flexion</span><input class="movement-input" id="lum-lf-r" placeholder="25°"></div>
+                  <div class="movement-row"><span class="movement-label">L Rotation</span><input class="movement-input" id="lum-rot-l" placeholder="30°"></div>
+                  <div class="movement-row"><span class="movement-label">R Rotation</span><input class="movement-input" id="lum-rot-r" placeholder="30°"></div>
+                  <span class="notes-label">Lumbar ROM Notes</span>
+                  <textarea class="notes-field" id="lum-notes" placeholder="e.g. Limited by pain at end range, aberrant movement with flexion..."></textarea>
+                </div>
+              </div>
+
+              <!-- Cervical -->
+              <div class="bp-accordion" style="margin-bottom:6px;">
+                <div class="bp-header" onclick="toggleBp(this)"><span>Cervical Spine</span><span class="bp-chevron">▼</span></div>
+                <div class="bp-body">
+                  <div class="movement-header-row"><span class="movement-col-label">Movement</span><span class="movement-col-label">Degrees °</span><span class="movement-col-label">Notes</span></div>
+                  <div class="movement-row"><span class="movement-label">Flexion</span><input class="movement-input" id="cer-flex" placeholder="45°"></div>
+                  <div class="movement-row"><span class="movement-label">Extension</span><input class="movement-input" id="cer-ext" placeholder="45°"></div>
+                  <div class="movement-row"><span class="movement-label">L Lateral Flexion</span><input class="movement-input" id="cer-lf-l" placeholder="45°"></div>
+                  <div class="movement-row"><span class="movement-label">R Lateral Flexion</span><input class="movement-input" id="cer-lf-r" placeholder="45°"></div>
+                  <div class="movement-row"><span class="movement-label">L Rotation</span><input class="movement-input" id="cer-rot-l" placeholder="60°"></div>
+                  <div class="movement-row"><span class="movement-label">R Rotation</span><input class="movement-input" id="cer-rot-r" placeholder="60°"></div>
+                  <span class="notes-label">Cervical ROM Notes</span>
+                  <textarea class="notes-field" id="cer-notes" placeholder=""></textarea>
+                </div>
+              </div>
+
+              <!-- Thoracic -->
+              <div class="bp-accordion" style="margin-bottom:6px;">
+                <div class="bp-header" onclick="toggleBp(this)"><span>Thoracic Spine</span><span class="bp-chevron">▼</span></div>
+                <div class="bp-body">
+                  <div class="movement-header-row"><span class="movement-col-label">Movement</span><span class="movement-col-label">Degrees °</span><span class="movement-col-label">Notes</span></div>
+                  <div class="movement-row"><span class="movement-label">Flexion</span><input class="movement-input" id="thor-flex" placeholder=""></div>
+                  <div class="movement-row"><span class="movement-label">Extension</span><input class="movement-input" id="thor-ext" placeholder=""></div>
+                  <div class="movement-row"><span class="movement-label">L Rotation</span><input class="movement-input" id="thor-rot-l" placeholder=""></div>
+                  <div class="movement-row"><span class="movement-label">R Rotation</span><input class="movement-input" id="thor-rot-r" placeholder=""></div>
+                  <span class="notes-label">Thoracic ROM Notes</span>
+                  <textarea class="notes-field" id="thor-notes" placeholder=""></textarea>
+                </div>
+              </div>
+
+              <!-- Shoulder -->
+              <div class="bp-accordion" style="margin-bottom:6px;">
+                <div class="bp-header" onclick="toggleBp(this)"><span>Shoulder</span><span class="bp-chevron">▼</span></div>
+                <div class="bp-body">
+                  <div class="movement-header-row"><span class="movement-col-label">Movement</span><span class="movement-col-label">L °</span><span class="movement-col-label">R °</span></div>
+                  <div class="movement-row"><span class="movement-label">Flexion</span><input class="movement-input" id="sh-flex-l" placeholder="180°"><input class="movement-input" id="sh-flex-r" placeholder="180°"></div>
+                  <div class="movement-row"><span class="movement-label">Extension</span><input class="movement-input" id="sh-ext-l" placeholder="60°"><input class="movement-input" id="sh-ext-r" placeholder="60°"></div>
+                  <div class="movement-row"><span class="movement-label">Abduction</span><input class="movement-input" id="sh-abd-l" placeholder="180°"><input class="movement-input" id="sh-abd-r" placeholder="180°"></div>
+                  <div class="movement-row"><span class="movement-label">Int Rotation</span><input class="movement-input" id="sh-ir-l" placeholder="70°"><input class="movement-input" id="sh-ir-r" placeholder="70°"></div>
+                  <div class="movement-row"><span class="movement-label">Ext Rotation</span><input class="movement-input" id="sh-er-l" placeholder="90°"><input class="movement-input" id="sh-er-r" placeholder="90°"></div>
+                  <span class="notes-label">Shoulder ROM Notes</span>
+                  <textarea class="notes-field" id="sh-notes" placeholder="e.g. Pain arc 70–120° abduction R shoulder..."></textarea>
+                </div>
+              </div>
+
+              <!-- Elbow -->
+              <div class="bp-accordion" style="margin-bottom:6px;">
+                <div class="bp-header" onclick="toggleBp(this)"><span>Elbow</span><span class="bp-chevron">▼</span></div>
+                <div class="bp-body">
+                  <div class="movement-header-row"><span class="movement-col-label">Movement</span><span class="movement-col-label">L °</span><span class="movement-col-label">R °</span></div>
+                  <div class="movement-row"><span class="movement-label">Flexion</span><input class="movement-input" id="el-flex-l" placeholder="150°"><input class="movement-input" id="el-flex-r" placeholder="150°"></div>
+                  <div class="movement-row"><span class="movement-label">Extension</span><input class="movement-input" id="el-ext-l" placeholder="0°"><input class="movement-input" id="el-ext-r" placeholder="0°"></div>
+                  <div class="movement-row"><span class="movement-label">Pronation</span><input class="movement-input" id="el-pro-l" placeholder="80°"><input class="movement-input" id="el-pro-r" placeholder="80°"></div>
+                  <div class="movement-row"><span class="movement-label">Supination</span><input class="movement-input" id="el-sup-l" placeholder="80°"><input class="movement-input" id="el-sup-r" placeholder="80°"></div>
+                  <span class="notes-label">Elbow Notes</span>
+                  <textarea class="notes-field" id="el-notes" placeholder=""></textarea>
+                </div>
+              </div>
+
+              <!-- Wrist -->
+              <div class="bp-accordion" style="margin-bottom:6px;">
+                <div class="bp-header" onclick="toggleBp(this)"><span>Wrist</span><span class="bp-chevron">▼</span></div>
+                <div class="bp-body">
+                  <div class="movement-header-row"><span class="movement-col-label">Movement</span><span class="movement-col-label">L °</span><span class="movement-col-label">R °</span></div>
+                  <div class="movement-row"><span class="movement-label">Flexion</span><input class="movement-input" id="wr-flex-l" placeholder="80°"><input class="movement-input" id="wr-flex-r" placeholder="80°"></div>
+                  <div class="movement-row"><span class="movement-label">Extension</span><input class="movement-input" id="wr-ext-l" placeholder="70°"><input class="movement-input" id="wr-ext-r" placeholder="70°"></div>
+                  <div class="movement-row"><span class="movement-label">Radial Deviation</span><input class="movement-input" id="wr-rad-l" placeholder="20°"><input class="movement-input" id="wr-rad-r" placeholder="20°"></div>
+                  <div class="movement-row"><span class="movement-label">Ulnar Deviation</span><input class="movement-input" id="wr-uln-l" placeholder="30°"><input class="movement-input" id="wr-uln-r" placeholder="30°"></div>
+                  <span class="notes-label">Wrist Notes</span>
+                  <textarea class="notes-field" id="wr-notes" placeholder=""></textarea>
+                </div>
+              </div>
+
+              <!-- Hip -->
+              <div class="bp-accordion" style="margin-bottom:6px;">
+                <div class="bp-header" onclick="toggleBp(this)"><span>Hip</span><span class="bp-chevron">▼</span></div>
+                <div class="bp-body">
+                  <div class="movement-header-row"><span class="movement-col-label">Movement</span><span class="movement-col-label">L °</span><span class="movement-col-label">R °</span></div>
+                  <div class="movement-row"><span class="movement-label">Flexion</span><input class="movement-input" id="hip-flex-l" placeholder="120°"><input class="movement-input" id="hip-flex-r" placeholder="120°"></div>
+                  <div class="movement-row"><span class="movement-label">Extension</span><input class="movement-input" id="hip-ext-l" placeholder="30°"><input class="movement-input" id="hip-ext-r" placeholder="30°"></div>
+                  <div class="movement-row"><span class="movement-label">Abduction</span><input class="movement-input" id="hip-abd-l" placeholder="45°"><input class="movement-input" id="hip-abd-r" placeholder="45°"></div>
+                  <div class="movement-row"><span class="movement-label">Adduction</span><input class="movement-input" id="hip-add-l" placeholder="30°"><input class="movement-input" id="hip-add-r" placeholder="30°"></div>
+                  <div class="movement-row"><span class="movement-label">Int Rotation</span><input class="movement-input" id="hip-ir-l" placeholder="45°"><input class="movement-input" id="hip-ir-r" placeholder="45°"></div>
+                  <div class="movement-row"><span class="movement-label">Ext Rotation</span><input class="movement-input" id="hip-er-l" placeholder="45°"><input class="movement-input" id="hip-er-r" placeholder="45°"></div>
+                  <span class="notes-label">Hip ROM Notes</span>
+                  <textarea class="notes-field" id="hip-notes" placeholder=""></textarea>
+                </div>
+              </div>
+
+              <!-- Knee -->
+              <div class="bp-accordion" style="margin-bottom:6px;">
+                <div class="bp-header" onclick="toggleBp(this)"><span>Knee</span><span class="bp-chevron">▼</span></div>
+                <div class="bp-body">
+                  <div class="movement-header-row"><span class="movement-col-label">Movement</span><span class="movement-col-label">L °</span><span class="movement-col-label">R °</span></div>
+                  <div class="movement-row"><span class="movement-label">Flexion</span><input class="movement-input" id="kn-flex-l" placeholder="135°"><input class="movement-input" id="kn-flex-r" placeholder="135°"></div>
+                  <div class="movement-row"><span class="movement-label">Extension</span><input class="movement-input" id="kn-ext-l" placeholder="0°"><input class="movement-input" id="kn-ext-r" placeholder="0°"></div>
+                  <span class="notes-label">Knee ROM Notes</span>
+                  <textarea class="notes-field" id="kn-notes" placeholder="e.g. -10° extension deficit right knee, crepitus with flexion..."></textarea>
+                </div>
+              </div>
+
+              <!-- Ankle -->
+              <div class="bp-accordion" style="margin-bottom:6px;">
+                <div class="bp-header" onclick="toggleBp(this)"><span>Ankle / Foot</span><span class="bp-chevron">▼</span></div>
+                <div class="bp-body">
+                  <div class="movement-header-row"><span class="movement-col-label">Movement</span><span class="movement-col-label">L °</span><span class="movement-col-label">R °</span></div>
+                  <div class="movement-row"><span class="movement-label">Dorsiflexion</span><input class="movement-input" id="ank-df-l" placeholder="20°"><input class="movement-input" id="ank-df-r" placeholder="20°"></div>
+                  <div class="movement-row"><span class="movement-label">Plantarflexion</span><input class="movement-input" id="ank-pf-l" placeholder="50°"><input class="movement-input" id="ank-pf-r" placeholder="50°"></div>
+                  <div class="movement-row"><span class="movement-label">Inversion</span><input class="movement-input" id="ank-inv-l" placeholder="35°"><input class="movement-input" id="ank-inv-r" placeholder="35°"></div>
+                  <div class="movement-row"><span class="movement-label">Eversion</span><input class="movement-input" id="ank-ev-l" placeholder="20°"><input class="movement-input" id="ank-ev-r" placeholder="20°"></div>
+                  <span class="notes-label">Ankle/Foot Notes</span>
+                  <textarea class="notes-field" id="ank-notes" placeholder=""></textarea>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- MMT -->
+          <div class="bp-accordion">
+            <div class="bp-header" onclick="toggleBp(this)"><span>Muscle Strength (MMT)</span><span class="bp-chevron">▼</span></div>
+            <div class="bp-body">
+
+              <div class="bp-accordion" style="margin-bottom:6px;">
+                <div class="bp-header" onclick="toggleBp(this)"><span>Trunk / Core</span><span class="bp-chevron">▼</span></div>
+                <div class="bp-body">
+                  <div class="mmt-header-row"><span class="movement-col-label">Muscle Group</span><span class="movement-col-label">Left</span><span class="movement-col-label">Right</span><span class="movement-col-label">Notes</span></div>
+                  <div class="mmt-row"><span class="mmt-label">Abdominals</span><select class="mmt-select" id="mmt-abd-l"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><select class="mmt-select" id="mmt-abd-r"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><input class="movement-note" id="mmt-abd-n" placeholder="notes"></div>
+                  <div class="mmt-row"><span class="mmt-label">Back Extensors</span><select class="mmt-select" id="mmt-bext-l"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><select class="mmt-select" id="mmt-bext-r"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><input class="movement-note" id="mmt-bext-n" placeholder="notes"></div>
+                </div>
+              </div>
+
+              <div class="bp-accordion" style="margin-bottom:6px;">
+                <div class="bp-header" onclick="toggleBp(this)"><span>Shoulder / Upper Extremity</span><span class="bp-chevron">▼</span></div>
+                <div class="bp-body">
+                  <div class="mmt-header-row"><span class="movement-col-label">Muscle Group</span><span class="movement-col-label">Left</span><span class="movement-col-label">Right</span><span class="movement-col-label">Notes</span></div>
+                  <div class="mmt-row"><span class="mmt-label">Shoulder Flexors</span><select class="mmt-select" id="mmt-shf-l"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><select class="mmt-select" id="mmt-shf-r"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><input class="movement-note" id="mmt-shf-n" placeholder="notes"></div>
+                  <div class="mmt-row"><span class="mmt-label">Shoulder Abductors</span><select class="mmt-select" id="mmt-sha-l"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><select class="mmt-select" id="mmt-sha-r"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><input class="movement-note" id="mmt-sha-n" placeholder="notes"></div>
+                  <div class="mmt-row"><span class="mmt-label">Elbow Flexors</span><select class="mmt-select" id="mmt-elf-l"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><select class="mmt-select" id="mmt-elf-r"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><input class="movement-note" id="mmt-elf-n" placeholder="notes"></div>
+                  <div class="mmt-row"><span class="mmt-label">Grip Strength</span><select class="mmt-select" id="mmt-grip-l"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><select class="mmt-select" id="mmt-grip-r"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><input class="movement-note" id="mmt-grip-n" placeholder="notes"></div>
+                </div>
+              </div>
+
+              <div class="bp-accordion" style="margin-bottom:6px;">
+                <div class="bp-header" onclick="toggleBp(this)"><span>Hip / Lower Extremity</span><span class="bp-chevron">▼</span></div>
+                <div class="bp-body">
+                  <div class="mmt-header-row"><span class="movement-col-label">Muscle Group</span><span class="movement-col-label">Left</span><span class="movement-col-label">Right</span><span class="movement-col-label">Notes</span></div>
+                  <div class="mmt-row"><span class="mmt-label">Hip Flexors</span><select class="mmt-select" id="mmt-hipf-l"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><select class="mmt-select" id="mmt-hipf-r"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><input class="movement-note" id="mmt-hipf-n" placeholder="notes"></div>
+                  <div class="mmt-row"><span class="mmt-label">Hip Extensors</span><select class="mmt-select" id="mmt-hipe-l"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><select class="mmt-select" id="mmt-hipe-r"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><input class="movement-note" id="mmt-hipe-n" placeholder="notes"></div>
+                  <div class="mmt-row"><span class="mmt-label">Hip Abductors</span><select class="mmt-select" id="mmt-hipa-l"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><select class="mmt-select" id="mmt-hipa-r"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><input class="movement-note" id="mmt-hipa-n" placeholder="notes"></div>
+                  <div class="mmt-row"><span class="mmt-label">Knee Extensors (Quads)</span><select class="mmt-select" id="mmt-kne-l"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><select class="mmt-select" id="mmt-kne-r"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><input class="movement-note" id="mmt-kne-n" placeholder="notes"></div>
+                  <div class="mmt-row"><span class="mmt-label">Knee Flexors (Hamstrings)</span><select class="mmt-select" id="mmt-knf-l"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><select class="mmt-select" id="mmt-knf-r"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><input class="movement-note" id="mmt-knf-n" placeholder="notes"></div>
+                  <div class="mmt-row"><span class="mmt-label">Ankle Dorsiflexors</span><select class="mmt-select" id="mmt-ankd-l"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><select class="mmt-select" id="mmt-ankd-r"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><input class="movement-note" id="mmt-ankd-n" placeholder="notes"></div>
+                  <div class="mmt-row"><span class="mmt-label">Ankle Plantarflexors</span><select class="mmt-select" id="mmt-ankp-l"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><select class="mmt-select" id="mmt-ankp-r"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><input class="movement-note" id="mmt-ankp-n" placeholder="notes"></div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Special Tests -->
+          <div class="bp-accordion">
+            <div class="bp-header" onclick="toggleBp(this)"><span>Special Tests</span><span class="bp-chevron">▼</span></div>
+            <div class="bp-body">
+              <div class="special-test-row" style="margin-bottom:4px;"><span class="movement-col-label" style="font-size:10px;">Test Name</span><span class="movement-col-label" style="font-size:10px;">Result</span><span class="movement-col-label" style="font-size:10px;">Notes</span></div>
+              <div class="special-test-row"><span class="st-label">SLR (Straight Leg Raise)</span><select class="st-select" id="st-slr"><option value="">—</option><option>Positive L</option><option>Positive R</option><option>Positive Bilateral</option><option>Negative</option></select><input class="movement-note" id="st-slr-n" placeholder="at what degree, symptoms reproduced..."></div>
+              <div class="special-test-row"><span class="st-label">Slump Test</span><select class="st-select" id="st-slump"><option value="">—</option><option>Positive L</option><option>Positive R</option><option>Positive Bilateral</option><option>Negative</option></select><input class="movement-note" id="st-slump-n" placeholder=""></div>
+              <div class="special-test-row"><span class="st-label">Spurling's Test</span><select class="st-select" id="st-spurling"><option value="">—</option><option>Positive L</option><option>Positive R</option><option>Positive Bilateral</option><option>Negative</option></select><input class="movement-note" id="st-spurling-n" placeholder=""></div>
+              <div class="special-test-row"><span class="st-label">FABER</span><select class="st-select" id="st-faber"><option value="">—</option><option>Positive L</option><option>Positive R</option><option>Positive Bilateral</option><option>Negative</option></select><input class="movement-note" id="st-faber-n" placeholder=""></div>
+              <div class="special-test-row"><span class="st-label">FADIR</span><select class="st-select" id="st-fadir"><option value="">—</option><option>Positive L</option><option>Positive R</option><option>Positive Bilateral</option><option>Negative</option></select><input class="movement-note" id="st-fadir-n" placeholder=""></div>
+              <div class="special-test-row"><span class="st-label">Hawkins-Kennedy</span><select class="st-select" id="st-hawk"><option value="">—</option><option>Positive L</option><option>Positive R</option><option>Positive Bilateral</option><option>Negative</option></select><input class="movement-note" id="st-hawk-n" placeholder=""></div>
+              <div class="special-test-row"><span class="st-label">Neer's Sign</span><select class="st-select" id="st-neer"><option value="">—</option><option>Positive L</option><option>Positive R</option><option>Positive Bilateral</option><option>Negative</option></select><input class="movement-note" id="st-neer-n" placeholder=""></div>
+              <div class="special-test-row"><span class="st-label">McMurray's Test</span><select class="st-select" id="st-mcm"><option value="">—</option><option>Positive L</option><option>Positive R</option><option>Positive Bilateral</option><option>Negative</option></select><input class="movement-note" id="st-mcm-n" placeholder=""></div>
+              <div class="special-test-row"><span class="st-label">Lachman's Test</span><select class="st-select" id="st-lach"><option value="">—</option><option>Positive L</option><option>Positive R</option><option>Positive Bilateral</option><option>Negative</option></select><input class="movement-note" id="st-lach-n" placeholder=""></div>
+              <span class="notes-label">Additional Special Tests</span>
+              <textarea class="notes-field" id="st-other" placeholder="Any other tests performed and results..."></textarea>
+            </div>
+          </div>
+
+          <!-- Sensation -->
+          <div class="bp-accordion">
+            <div class="bp-header" onclick="toggleBp(this)"><span>Sensation / Neurological Screen</span><span class="bp-chevron">▼</span></div>
+            <div class="bp-body">
+              <div class="check-grid">
+                <label class="check-item"><input type="checkbox" id="sens-intact"> Sensation intact throughout</label>
+                <label class="check-item"><input type="checkbox" id="sens-reduced"> Reduced sensation</label>
+                <label class="check-item"><input type="checkbox" id="sens-absent"> Absent sensation</label>
+                <label class="check-item"><input type="checkbox" id="sens-paresthesia"> Paresthesia / tingling</label>
+                <label class="check-item"><input type="checkbox" id="sens-numbness"> Numbness reported</label>
+                <label class="check-item"><input type="checkbox" id="sens-reflexes"> Reflexes WNL</label>
+              </div>
+              <span class="notes-label">Neurological Notes</span>
+              <textarea class="notes-field" id="sens-notes" placeholder="Dermatome testing, reflex grading, specific areas affected..."></textarea>
+            </div>
+          </div>
+
+          <!-- Palpation -->
+          <div class="bp-accordion">
+            <div class="bp-header" onclick="toggleBp(this)"><span>Palpation / Soft Tissue</span><span class="bp-chevron">▼</span></div>
+            <div class="bp-body">
+              <div class="check-grid">
+                <label class="check-item"><input type="checkbox" id="palp-tender"> Point tenderness</label>
+                <label class="check-item"><input type="checkbox" id="palp-spasm"> Muscle spasm</label>
+                <label class="check-item"><input type="checkbox" id="palp-tightness"> Soft tissue tightness</label>
+                <label class="check-item"><input type="checkbox" id="palp-trigger"> Trigger points</label>
+                <label class="check-item"><input type="checkbox" id="palp-edema"> Edema / swelling</label>
+                <label class="check-item"><input type="checkbox" id="palp-warmth"> Warmth / inflammation</label>
+              </div>
+              <span class="notes-label">Palpation Notes</span>
+              <textarea class="notes-field" id="palp-notes" placeholder="Location, severity, tissue quality..."></textarea>
+            </div>
+          </div>
+
+          <!-- Functional Mobility -->
+          <div class="bp-accordion">
+            <div class="bp-header" onclick="toggleBp(this)"><span>Functional Mobility</span><span class="bp-chevron">▼</span></div>
+            <div class="bp-body">
+              <div class="special-test-row" style="margin-bottom:4px;"><span class="movement-col-label" style="font-size:10px;">Task</span><span class="movement-col-label" style="font-size:10px;">Status</span><span class="movement-col-label" style="font-size:10px;">Notes</span></div>
+              <div class="special-test-row"><span class="st-label">Sit to Stand</span><select class="st-select" id="fm-sts"><option value="">—</option><option>Independent</option><option>Modified Indep.</option><option>Supervision</option><option>Min Assist</option><option>Mod Assist</option><option>Max Assist</option><option>Dependent</option></select><input class="movement-note" id="fm-sts-n" placeholder="e.g. uses armrests, 3 attempts"></div>
+              <div class="special-test-row"><span class="st-label">Ambulation</span><select class="st-select" id="fm-amb"><option value="">—</option><option>Independent</option><option>Modified Indep.</option><option>Supervision</option><option>Min Assist</option><option>Mod Assist</option><option>Max Assist</option><option>Dependent</option></select><input class="movement-note" id="fm-amb-n" placeholder="distance, assistive device"></div>
+              <div class="special-test-row"><span class="st-label">Stairs</span><select class="st-select" id="fm-stair"><option value="">—</option><option>Independent</option><option>Modified Indep.</option><option>Supervision</option><option>Min Assist</option><option>Mod Assist</option><option>Max Assist</option><option>Dependent</option><option>Not tested</option></select><input class="movement-note" id="fm-stair-n" placeholder="step-over-step vs step-to-step"></div>
+              <div class="special-test-row"><span class="st-label">Bed Mobility</span><select class="st-select" id="fm-bed"><option value="">—</option><option>Independent</option><option>Modified Indep.</option><option>Supervision</option><option>Min Assist</option><option>Mod Assist</option><option>Max Assist</option><option>Dependent</option><option>Not tested</option></select><input class="movement-note" id="fm-bed-n" placeholder=""></div>
+              <span class="notes-label">Functional Mobility Notes</span>
+              <textarea class="notes-field" id="fm-notes" placeholder="Additional observations..."></textarea>
+            </div>
+          </div>
+
+          <!-- Balance -->
+          <div class="bp-accordion">
+            <div class="bp-header" onclick="toggleBp(this)"><span>Balance Assessment</span><span class="bp-chevron">▼</span></div>
+            <div class="bp-body">
+              <div class="check-grid">
+                <label class="check-item"><input type="checkbox" id="bal-static-intact"> Static balance intact</label>
+                <label class="check-item"><input type="checkbox" id="bal-dynamic-intact"> Dynamic balance intact</label>
+                <label class="check-item"><input type="checkbox" id="bal-static-impaired"> Static balance impaired</label>
+                <label class="check-item"><input type="checkbox" id="bal-dynamic-impaired"> Dynamic balance impaired</label>
+                <label class="check-item"><input type="checkbox" id="bal-romberg"> Romberg positive</label>
+                <label class="check-item"><input type="checkbox" id="bal-fall-risk"> Fall risk identified</label>
+              </div>
+              <span class="notes-label">Balance / TUG Test / Berg Score Notes</span>
+              <textarea class="notes-field" id="bal-notes" placeholder="TUG time, Berg score, single leg stance times, specific deficits..."></textarea>
+            </div>
+          </div>
+
+          <!-- Edema -->
+          <div class="bp-accordion">
+            <div class="bp-header" onclick="toggleBp(this)"><span>Edema / Swelling</span><span class="bp-chevron">▼</span></div>
+            <div class="bp-body">
+              <div class="check-grid">
+                <label class="check-item"><input type="checkbox" id="edema-none"> No edema noted</label>
+                <label class="check-item"><input type="checkbox" id="edema-mild"> Mild edema</label>
+                <label class="check-item"><input type="checkbox" id="edema-mod"> Moderate edema</label>
+                <label class="check-item"><input type="checkbox" id="edema-severe"> Severe edema</label>
+                <label class="check-item"><input type="checkbox" id="edema-pitting"> Pitting edema</label>
+                <label class="check-item"><input type="checkbox" id="edema-non-pitting"> Non-pitting edema</label>
+              </div>
+              <span class="notes-label">Edema Location & Measurements</span>
+              <textarea class="notes-field" id="edema-notes" placeholder="e.g. 2+ pitting edema right ankle, girth measurement 28cm (L) vs 31cm (R)..."></textarea>
+            </div>
+          </div>
+
+          <!-- Skin -->
+          <div class="bp-accordion">
+            <div class="bp-header" onclick="toggleBp(this)"><span>Skin / Wound Assessment</span><span class="bp-chevron">▼</span></div>
+            <div class="bp-body">
+              <div class="check-grid">
+                <label class="check-item"><input type="checkbox" id="skin-intact"> Skin intact</label>
+                <label class="check-item"><input type="checkbox" id="skin-scar"> Surgical scar present</label>
+                <label class="check-item"><input type="checkbox" id="skin-wound"> Open wound</label>
+                <label class="check-item"><input type="checkbox" id="skin-bruising"> Bruising / ecchymosis</label>
+                <label class="check-item"><input type="checkbox" id="skin-redness"> Redness / erythema</label>
+                <label class="check-item"><input type="checkbox" id="skin-na"> Not assessed</label>
+              </div>
+              <span class="notes-label">Skin / Wound Notes</span>
+              <textarea class="notes-field" id="skin-notes" placeholder="Location, size, stage, drainage if applicable..."></textarea>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Frequency / Duration -->
+      <div class="section-divider" style="margin-top:1.25rem;">Plan of Care</div>
+      <div class="field-grid">
+        <div class="field"><label>Recommended Frequency</label><input id="e-freq" placeholder="e.g. 3x/week"></div>
+        <div class="field"><label>Duration</label><input id="e-dur" placeholder="e.g. 6 weeks"></div>
+      </div>
+
+    </div>
+
+    <!-- ═══════════════════════════════════════ SOAP NOTE ═══ -->
+    <div class="form-section" id="section-soap">
+      <h2>Daily SOAP Note</h2>
+      <p class="subtitle">Document today's visit. The AI will write a complete SOAP note with skilled care justification and billing codes.</p>
+      <div class="field-grid three">
+        <div class="field"><label>Patient Name / ID</label><input id="s-name" placeholder="J. Doe"></div>
+        <div class="field"><label>Visit Number</label><input id="s-visit" placeholder="e.g. Visit 5 of 18"></div>
+        <div class="field"><label>Diagnosis / ICD-10</label><input id="s-dx" placeholder="M54.5"></div>
+      </div>
+      <div class="section-divider">S — Subjective</div>
+      <div class="field field-full"><label>Patient's report today</label><textarea id="s-sub" placeholder="Patient reports pain improved to 4/10 at rest since last visit..."></textarea></div>
+      <div class="section-divider">O — Objective</div>
+      <div class="field field-full"><label>Measurements & interventions performed</label><textarea id="s-obj" placeholder="Lumbar flexion 55°. Therapeutic exercise x30 min, manual therapy x15 min..."></textarea></div>
+      <div class="section-divider">A — Assessment & P — Plan</div>
+      <div class="field-grid">
+        <div class="field"><label>Response to treatment</label><input id="s-resp" placeholder="Tolerated all interventions well"></div>
+        <div class="field"><label>Progress toward goals</label><input id="s-prog" placeholder="Steady progress, STG 1 at 60%"></div>
+      </div>
+      <div class="field field-full"><label>Plan</label><textarea id="s-plan" placeholder="Continue current POC. Progress core stabilization next visit..."></textarea></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════ PROGRESS NOTE ═══ -->
+    <div class="form-section" id="section-progress">
+      <h2>Progress Note</h2>
+      <p class="subtitle">Covers multiple visits. Strong medical necessity language for continued authorization.</p>
+      <div class="field-grid">
+        <div class="field"><label>Patient Name / ID</label><input id="p-name" placeholder="J. Doe"></div>
+        <div class="field"><label>Dates / Visit Range</label><input id="p-dates" placeholder="Weeks 3–4, Visits 7–12"></div>
+      </div>
+      <div class="field-grid">
+        <div class="field"><label>Diagnosis</label><input id="p-dx" placeholder="M54.5 – Low back pain"></div>
+        <div class="field"><label>Insurance / Payer</label><input id="p-ins" placeholder="Medicare, Blue Cross, etc."></div>
+      </div>
+      <div class="section-divider">Goals & Progress</div>
+      <div class="field field-full"><label>Short-term & long-term goals (from initial eval)</label><textarea id="p-goals" placeholder="STG 1: Reduce pain to ≤3/10 — Status: MET&#10;LTG 1: Return to full-time work — IN PROGRESS"></textarea></div>
+      <div class="field field-full"><label>Objective measurements this period (compare to baseline)</label><textarea id="p-meas" placeholder="Pain: 2/10 (was 6/10). Lumbar flexion: 58° (was 40°)..."></textarea></div>
+      <div class="field field-full"><label>Remaining deficits & barriers to discharge</label><textarea id="p-barriers" placeholder="Persistent morning stiffness, limited standing tolerance..."></textarea></div>
+      <div class="field field-full"><label>Justification for continued skilled PT</label><textarea id="p-just" placeholder="Patient has not yet reached prior level of function..."></textarea></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════ DISCHARGE ═══ -->
+    <div class="form-section" id="section-discharge">
+      <h2>Discharge Summary</h2>
+      <p class="subtitle">Close out the episode of care with final outcomes and recommendations.</p>
+      <div class="field-grid">
+        <div class="field"><label>Patient Name / ID</label><input id="d-name" placeholder="J. Doe"></div>
+        <div class="field"><label>Total Visits / Duration</label><input id="d-visits" placeholder="18 visits over 6 weeks"></div>
+      </div>
+      <div class="field-grid">
+        <div class="field"><label>Diagnosis</label><input id="d-dx" placeholder="M54.5 – Low back pain"></div>
+        <div class="field"><label>Discharge Status</label><input id="d-status" placeholder="Goals met, returning to full duty"></div>
+      </div>
+      <div class="section-divider">Outcomes</div>
+      <div class="field field-full"><label>Final objective measurements (vs. initial)</label><textarea id="d-outcomes" placeholder="Pain: 1/10 (was 6/10). Lumbar flexion: 58° (was 40°)..."></textarea></div>
+      <div class="field field-full"><label>Goal achievement status</label><textarea id="d-goals" placeholder="STG 1 – Pain ≤3/10: MET&#10;LTG 1 – Return to full-time work: MET"></textarea></div>
+      <div class="section-divider">Discharge Plan</div>
+      <div class="field field-full"><label>Home exercise program prescribed</label><textarea id="d-hep" placeholder="10-exercise program: lumbar stabilization, hip strengthening..."></textarea></div>
+      <div class="field field-full"><label>Recommendations & follow-up</label><textarea id="d-rec" placeholder="Return to PT PRN. Follow up with MD in 6 weeks..."></textarea></div>
+    </div>
+
+    <div style="display:flex; align-items:center; gap:1rem; flex-wrap:wrap; margin-top:1rem;">
+      <button class="btn-generate" id="gen-btn" onclick="generate()">
+        <div class="spinner"></div>
+        <span class="btn-text">Generate Note</span>
+      </button>
+      <div class="status-msg" id="status-msg"></div>
+    </div>
+  </div>
+
+  <!-- Output -->
+  <div class="output-card" id="output-card">
+    <div class="print-letterhead" style="display:none;">
+      <div class="lh-info">
+        <div class="lh-name">Healing Institute of Physical Therapy</div>
+        <div>9100 E Hampton Dr #A2, Capitol Heights, MD 20743</div>
+        <div>&#128222; 301-909-8409 &nbsp;|&nbsp; Fax: 833-415-2008</div>
+        <div>admin@healinginstitutept.com</div>
+      </div>
+      <img class="lh-logo" src="logo.png" alt="Healing Institute PT Logo">
+    </div>
+    <div class="output-header">
+      <div>
+        <div class="output-title" id="output-title">Generated Note</div>
+        <div class="output-meta" id="output-meta"></div>
+      </div>
+      <div class="output-actions">
+        <button class="btn-action print" onclick="window.print()">🖨 Print / Save PDF</button>
+        <button class="btn-action" onclick="copyNote()">Copy Text</button>
+      </div>
+    </div>
+    <div class="output-body" id="output-body"></div>
+    <div class="output-footer">⚠️ Review all AI-generated content before signing. This tool supports documentation — it does not replace clinical judgment.</div>
+  </div>
+
+  <div class="hipaa-banner"><strong>HIPAA Notice:</strong> Do not enter real patient names or identifying information until you have a signed Business Associate Agreement (BAA) with Anthropic. Use patient initials or ID numbers only.</div>
+
+</div>
+
+<script>
+  })});
+  let currentTab = 'eval';
+  let apiKey = '';
+
+  function saveApiKey() {
+    const val = document.getElementById('api-key-input').value.trim();
+    if (!val.startsWith('sk-ant-')) { alert('That does not look like a valid Anthropic API key. It should start with sk-ant-'); return; }
+    apiKey = val;
+    document.getElementById('api-banner').style.display = 'none';
+  }
+
+  function switchTab(tab, el) {
+    currentTab = tab;
+    document.querySelectorAll('.note-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('section-' + tab).classList.add('active');
+    document.getElementById('output-card').classList.remove('visible');
+    document.getElementById('status-msg').textContent = '';
+  }
+
+  function toggleAccordion(header) {
+    const body = header.nextElementSibling;
+    const isOpen = header.classList.contains('open');
+    header.classList.toggle('open', !isOpen);
+    header.querySelector('.accordion-chevron').textContent = isOpen ? '▼' : '▲';
+    body.classList.toggle('open', !isOpen);
+  }
+
+  function toggleBp(header) {
+    const body = header.nextElementSibling;
+    const isOpen = header.classList.contains('open');
+    header.classList.toggle('open', !isOpen);
+    header.querySelector('.bp-chevron').textContent = isOpen ? '▼' : '▲';
+    body.classList.toggle('open', !isOpen);
+  }
+
+  function g(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
+  function chk(id) { const el = document.getElementById(id); return el && el.checked; }
+  function today() { return new Date().toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' }); }
+
+  function collectPosture() {
+    const checks = [];
+    if(chk('post-forward-head')) checks.push('Forward head posture');
+    if(chk('post-kyphosis')) checks.push('Increased thoracic kyphosis');
+    if(chk('post-lordosis')) checks.push('Increased lumbar lordosis');
+    if(chk('post-flat')) checks.push('Flattened lumbar lordosis');
+    if(chk('post-scoliosis')) checks.push('Scoliosis/lateral shift');
+    if(chk('post-shoulder')) checks.push('Shoulder elevation/asymmetry');
+    if(chk('post-pelvis')) checks.push('Pelvic tilt/asymmetry');
+    if(chk('post-wnl')) checks.push('WNL');
+    const n = g('post-notes');
+    return checks.length ? checks.join(', ') + (n ? '. ' + n : '') : n || 'Not assessed';
+  }
+
+  function collectGait() {
+    const checks = [];
+    if(chk('gait-antalgic')) checks.push('Antalgic gait');
+    if(chk('gait-trendelenburg')) checks.push('Trendelenburg gait');
+    if(chk('gait-steppage')) checks.push('Steppage gait');
+    if(chk('gait-ataxic')) checks.push('Ataxic gait');
+    if(chk('gait-reduced-arm')) checks.push('Reduced arm swing');
+    if(chk('gait-reduced-stride')) checks.push('Reduced stride length');
+    if(chk('gait-assistive')) checks.push('Requires assistive device');
+    if(chk('gait-wnl')) checks.push('WNL');
+    const n = g('gait-notes');
+    return checks.length ? checks.join(', ') + (n ? '. ' + n : '') : n || 'Not assessed';
+  }
+
+  function collectROM() {
+    const rows = [];
+    const spine = [];
+    if(g('lum-flex')||g('lum-ext')||g('lum-lf-l')||g('lum-rot-l')) {
+      spine.push('Lumbar: Flex=' + (g('lum-flex')||'—') + ' Ext=' + (g('lum-ext')||'—') + ' LF-L=' + (g('lum-lf-l')||'—') + ' LF-R=' + (g('lum-lf-r')||'—') + ' Rot-L=' + (g('lum-rot-l')||'—') + ' Rot-R=' + (g('lum-rot-r')||'—') + (g('lum-notes') ? ' ('+g('lum-notes')+')':''));
+    }
+    if(g('cer-flex')||g('cer-ext')) {
+      spine.push('Cervical: Flex=' + (g('cer-flex')||'—') + ' Ext=' + (g('cer-ext')||'—') + ' LF-L=' + (g('cer-lf-l')||'—') + ' LF-R=' + (g('cer-lf-r')||'—') + ' Rot-L=' + (g('cer-rot-l')||'—') + ' Rot-R=' + (g('cer-rot-r')||'—') + (g('cer-notes') ? ' ('+g('cer-notes')+')':''));
+    }
+    if(g('thor-flex')||g('thor-ext')) {
+      spine.push('Thoracic: Flex=' + (g('thor-flex')||'—') + ' Ext=' + (g('thor-ext')||'—') + ' Rot-L=' + (g('thor-rot-l')||'—') + ' Rot-R=' + (g('thor-rot-r')||'—') + (g('thor-notes') ? ' ('+g('thor-notes')+')':''));
+    }
+    if(g('sh-flex-l')||g('sh-flex-r')) {
+      spine.push('Shoulder: Flex L=' + (g('sh-flex-l')||'—') + '/R=' + (g('sh-flex-r')||'—') + ' Abd L=' + (g('sh-abd-l')||'—') + '/R=' + (g('sh-abd-r')||'—') + ' IR L=' + (g('sh-ir-l')||'—') + '/R=' + (g('sh-ir-r')||'—') + ' ER L=' + (g('sh-er-l')||'—') + '/R=' + (g('sh-er-r')||'—') + (g('sh-notes') ? ' ('+g('sh-notes')+')':''));
+    }
+    if(g('el-flex-l')||g('el-flex-r')) {
+      spine.push('Elbow: Flex L=' + (g('el-flex-l')||'—') + '/R=' + (g('el-flex-r')||'—') + ' Pro L=' + (g('el-pro-l')||'—') + '/R=' + (g('el-pro-r')||'—') + (g('el-notes') ? ' ('+g('el-notes')+')':''));
+    }
+    if(g('wr-flex-l')||g('wr-flex-r')) {
+      spine.push('Wrist: Flex L=' + (g('wr-flex-l')||'—') + '/R=' + (g('wr-flex-r')||'—') + ' Ext L=' + (g('wr-ext-l')||'—') + '/R=' + (g('wr-ext-r')||'—') + (g('wr-notes') ? ' ('+g('wr-notes')+')':''));
+    }
+    if(g('hip-flex-l')||g('hip-flex-r')) {
+      spine.push('Hip: Flex L=' + (g('hip-flex-l')||'—') + '/R=' + (g('hip-flex-r')||'—') + ' Ext L=' + (g('hip-ext-l')||'—') + '/R=' + (g('hip-ext-r')||'—') + ' Abd L=' + (g('hip-abd-l')||'—') + '/R=' + (g('hip-abd-r')||'—') + ' IR L=' + (g('hip-ir-l')||'—') + '/R=' + (g('hip-ir-r')||'—') + ' ER L=' + (g('hip-er-l')||'—') + '/R=' + (g('hip-er-r')||'—') + (g('hip-notes') ? ' ('+g('hip-notes')+')':''));
+    }
+    if(g('kn-flex-l')||g('kn-flex-r')) {
+      spine.push('Knee: Flex L=' + (g('kn-flex-l')||'—') + '/R=' + (g('kn-flex-r')||'—') + ' Ext L=' + (g('kn-ext-l')||'—') + '/R=' + (g('kn-ext-r')||'—') + (g('kn-notes') ? ' ('+g('kn-notes')+')':''));
+    }
+    if(g('ank-df-l')||g('ank-df-r')) {
+      spine.push('Ankle: DF L=' + (g('ank-df-l')||'—') + '/R=' + (g('ank-df-r')||'—') + ' PF L=' + (g('ank-pf-l')||'—') + '/R=' + (g('ank-pf-r')||'—') + (g('ank-notes') ? ' ('+g('ank-notes')+')':''));
+    }
+    return spine.length ? spine.join('; ') : 'Not assessed';
+  }
+
+  function collectMMT() {
+    const results = [];
+    const groups = [
+      ['Abdominals','mmt-abd'],['Back Extensors','mmt-bext'],
+      ['Shoulder Flexors','mmt-shf'],['Shoulder Abductors','mmt-sha'],
+      ['Elbow Flexors','mmt-elf'],['Grip Strength','mmt-grip'],
+      ['Hip Flexors','mmt-hipf'],['Hip Extensors','mmt-hipe'],['Hip Abductors','mmt-hipa'],
+      ['Quad (Knee Ext)','mmt-kne'],['Hamstrings (Knee Flex)','mmt-knf'],
+      ['Ankle Dorsiflexors','mmt-ankd'],['Ankle Plantarflexors','mmt-ankp']
+    ];
+    groups.forEach(([name, id]) => {
+      const l = g(id+'-l'), r = g(id+'-r'), n = g(id+'-n');
+      if(l || r) results.push(name + ': L=' + (l||'—') + ' R=' + (r||'—') + (n?' ('+n+')':''));
+    });
+    return results.length ? results.join('; ') : 'Not assessed';
+  }
+
+  function collectSpecialTests() {
+    const tests = [
+      ['SLR','st-slr'],['Slump Test','st-slump'],["Spurling's",'st-spurling'],
+      ['FABER','st-faber'],['FADIR','st-fadir'],["Hawkins-Kennedy",'st-hawk'],
+      ["Neer's Sign",'st-neer'],["McMurray's",'st-mcm'],["Lachman's",'st-lach']
+    ];
+    const results = [];
+    tests.forEach(([name, id]) => {
+      const v = g(id), n = g(id+'-n');
+      if(v) results.push(name + ': ' + v + (n ? ' — ' + n : ''));
+    });
+    const other = g('st-other');
+    if(other) results.push(other);
+    return results.length ? results.join('; ') : 'Not assessed';
+  }
+
+  function collectSensation() {
+    const checks = [];
+    if(chk('sens-intact')) checks.push('Intact throughout');
+    if(chk('sens-reduced')) checks.push('Reduced sensation');
+    if(chk('sens-absent')) checks.push('Absent sensation');
+    if(chk('sens-paresthesia')) checks.push('Paresthesia/tingling');
+    if(chk('sens-numbness')) checks.push('Numbness');
+    if(chk('sens-reflexes')) checks.push('Reflexes WNL');
+    const n = g('sens-notes');
+    return checks.length ? checks.join(', ') + (n ? '. ' + n : '') : n || 'Not assessed';
+  }
+
+  function collectPalpation() {
+    const checks = [];
+    if(chk('palp-tender')) checks.push('Point tenderness');
+    if(chk('palp-spasm')) checks.push('Muscle spasm');
+    if(chk('palp-tightness')) checks.push('Soft tissue tightness');
+    if(chk('palp-trigger')) checks.push('Trigger points');
+    if(chk('palp-edema')) checks.push('Edema/swelling');
+    if(chk('palp-warmth')) checks.push('Warmth/inflammation');
+    const n = g('palp-notes');
+    return checks.length ? checks.join(', ') + (n ? '. ' + n : '') : n || 'Not assessed';
+  }
+
+  function collectFunctionalMobility() {
+    const tasks = [
+      ['Sit to Stand','fm-sts'],['Ambulation','fm-amb'],['Stairs','fm-stair'],['Bed Mobility','fm-bed']
+    ];
+    const results = [];
+    tasks.forEach(([name, id]) => {
+      const v = g(id), n = g(id+'-n');
+      if(v && v !== '—') results.push(name + ': ' + v + (n ? ' (' + n + ')' : ''));
+    });
+    const notes = g('fm-notes');
+    if(notes) results.push(notes);
+    return results.length ? results.join('; ') : 'Not assessed';
+  }
+
+  function collectBalance() {
+    const checks = [];
+    if(chk('bal-static-intact')) checks.push('Static balance intact');
+    if(chk('bal-dynamic-intact')) checks.push('Dynamic balance intact');
+    if(chk('bal-static-impaired')) checks.push('Static balance impaired');
+    if(chk('bal-dynamic-impaired')) checks.push('Dynamic balance impaired');
+    if(chk('bal-romberg')) checks.push('Romberg positive');
+    if(chk('bal-fall-risk')) checks.push('Fall risk identified');
+    const n = g('bal-notes');
+    return checks.length ? checks.join(', ') + (n ? '. ' + n : '') : n || 'Not assessed';
+  }
+
+  function collectEdema() {
+    const checks = [];
+    if(chk('edema-none')) checks.push('No edema');
+    if(chk('edema-mild')) checks.push('Mild edema');
+    if(chk('edema-mod')) checks.push('Moderate edema');
+    if(chk('edema-severe')) checks.push('Severe edema');
+    if(chk('edema-pitting')) checks.push('Pitting');
+    if(chk('edema-non-pitting')) checks.push('Non-pitting');
+    const n = g('edema-notes');
+    return checks.length ? checks.join(', ') + (n ? '. ' + n : '') : n || 'Not assessed';
+  }
+
+  function collectSkin() {
+    const checks = [];
+    if(chk('skin-intact')) checks.push('Skin intact');
+    if(chk('skin-scar')) checks.push('Surgical scar present');
+    if(chk('skin-wound')) checks.push('Open wound');
+    if(chk('skin-bruising')) checks.push('Bruising/ecchymosis');
+    if(chk('skin-redness')) checks.push('Redness/erythema');
+    if(chk('skin-na')) checks.push('Not assessed');
+    const n = g('skin-notes');
+    return checks.length ? checks.join(', ') + (n ? '. ' + n : '') : n || 'Not assessed';
+  }
+
+  function buildPrompt() {
+    const system = `You are a licensed physical therapist generating clinical documentation for Healing Institute of Physical Therapy. Your notes must:
+- Use standard PT abbreviations and medical terminology
+- Include strong medical necessity language justifying skilled PT services
+- Reference functional deficits and their impact on ADLs, work, and quality of life
+- Use objective measurable data to support clinical decision-making
+- Be compliant with Medicare and commercial insurance payer requirements
+- Include relevant CPT codes
+- Use ALL CAPS for section headers
+- Be professional, concise, and legally defensible`;
+
+    const date = today();
+
+    if(currentTab === 'eval') {
+      const objData = `Posture: ${collectPosture()}
+Gait: ${collectGait()}
+ROM: ${collectROM()}
+MMT: ${collectMMT()}
+Special Tests: ${collectSpecialTests()}
+Sensation/Neuro: ${collectSensation()}
+Palpation: ${collectPalpation()}
+Functional Mobility: ${collectFunctionalMobility()}
+Balance: ${collectBalance()}
+Edema: ${collectEdema()}
+Skin/Wound: ${collectSkin()}`;
+
+      return { system, user: `Generate a complete Initial Evaluation note. Date: ${date}
+
+PATIENT: ${g('e-name')} | VISIT DATE: ${g('e-date')}
+DIAGNOSIS: ${g('e-dx')}
+REFERRING MD: ${g('e-md')}
+
+SUBJECTIVE:
+Chief Complaint/MOI: ${g('e-cc')}
+Pain: ${g('e-pain')} | Quality: ${g('e-pq')}
+Functional Limitations: ${g('e-func')}
+Prior Level of Function: ${g('e-plof')}
+Past Medical History: ${g('e-pmh')}
+
+OBJECTIVE:
+${objData}
+
+PLAN OF CARE: ${g('e-freq')} x ${g('e-dur')}
+
+Generate sections: DATE OF SERVICE, PATIENT INFORMATION, REFERRAL, SUBJECTIVE (use all clinical findings data above), OBJECTIVE EXAMINATION (format ROM as a structured table with normal values for comparison, present all measurements provided), ASSESSMENT (include medical necessity statement justifying skilled PT), SHORT-TERM GOALS (3-4 SMART goals, 2-3 week timeframe), LONG-TERM GOALS (3-4 SMART goals, discharge timeframe), PLAN OF CARE, THERAPIST SIGNATURE LINE, CPT CODES BILLED.` };
+    }
+
+    if(currentTab === 'soap') {
+      return { system, user: `Generate a complete daily SOAP note. Date: ${date}
+PATIENT: ${g('s-name')} | ${g('s-visit')} | DX: ${g('s-dx')}
+S: ${g('s-sub')}
+O: ${g('s-obj')}
+Response: ${g('s-resp')} | Progress: ${g('s-prog')}
+Plan: ${g('s-plan')}
+Include: DATE, PATIENT/VISIT INFO, SUBJECTIVE, OBJECTIVE (interventions with time/parameters), ASSESSMENT (skilled care justification), PLAN, SIGNATURE LINE, CPT CODES.` };
+    }
+
+    if(currentTab === 'progress') {
+      return { system, user: `Generate a Progress Note for insurance authorization. Date: ${date}
+PATIENT: ${g('p-name')} | PERIOD: ${g('p-dates')} | DX: ${g('p-dx')} | PAYER: ${g('p-ins')}
+GOALS: ${g('p-goals')}
+MEASUREMENTS: ${g('p-meas')}
+BARRIERS: ${g('p-barriers')}
+JUSTIFICATION: ${g('p-just')}
+Include: DATE, PATIENT/PERIOD, DIAGNOSIS, TREATMENT SUMMARY, GOAL STATUS, OBJECTIVE PROGRESS, CLINICAL IMPRESSION (strong medical necessity for continued PT), UPDATED PLAN, SIGNATURE LINE, CPT CODES.` };
+    }
+
+    if(currentTab === 'discharge') {
+      return { system, user: `Generate a Discharge Summary. Date: ${date}
+PATIENT: ${g('d-name')} | TOTAL CARE: ${g('d-visits')} | DX: ${g('d-dx')} | STATUS: ${g('d-status')}
+OUTCOMES: ${g('d-outcomes')}
+GOALS: ${g('d-goals')}
+HEP: ${g('d-hep')}
+RECOMMENDATIONS: ${g('d-rec')}
+Include: DATE, PATIENT INFO, EPISODE SUMMARY, INITIAL vs DISCHARGE STATUS, GOAL ACHIEVEMENT, FUNCTIONAL OUTCOMES, HEP, PATIENT EDUCATION, DISCHARGE DISPOSITION, SIGNATURE LINE, FINAL CPT CODES.` };
+    }
+  }
+
+  async function generate() {
+    if(!apiKey) { document.getElementById('status-msg').textContent = 'Please enter your API key at the top of the page first.'; document.getElementById('status-msg').className = 'status-msg error'; return; }
+    const btn = document.getElementById('gen-btn');
+    const status = document.getElementById('status-msg');
+    const outputCard = document.getElementById('output-card');
+    btn.disabled = true; btn.classList.add('loading');
+    status.textContent = 'Generating your note — this takes about 15–20 seconds…';
+    status.className = 'status-msg';
+    outputCard.classList.remove('visible');
+    try {
+      const prompt = buildPrompt();
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+        body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 1800, system: prompt.system, messages: [{ role: 'user', content: prompt.user }] })
+      });
+      if(!response.ok) { const err = await response.json(); throw new Error(err.error?.message || 'API error ' + response.status); }
+      const data = await response.json();
+      const text = data.content.map(b => b.text || '').join('');
+      const titles = { eval: 'Initial Evaluation', soap: 'SOAP Note', progress: 'Progress Note', discharge: 'Discharge Summary' };
+      const patientId = g('e-name') || g('s-name') || g('p-name') || g('d-name') || 'Patient';
+      document.getElementById('output-title').textContent = titles[currentTab];
+      document.getElementById('output-meta').textContent = patientId + ' · Generated ' + today();
+      document.getElementById('output-body').textContent = text;
+      outputCard.classList.add('visible');
+      outputCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      status.textContent = 'Note generated. Review carefully before signing.';
+      status.className = 'status-msg';
+    } catch(err) {
+      status.textContent = 'Error: ' + err.message + ' — Check your API key and try again.';
+      status.className = 'status-msg error';
+    } finally {
+      btn.disabled = false; btn.classList.remove('loading');
+    }
+  }
+
+  async function copyNote() {
+    const text = document.getElementById('output-body').textContent;
+    try {
+      await navigator.clipboard.writeText(text);
+      const btn = event.target;
+      btn.textContent = '✓ Copied!';
+      setTimeout(() => btn.textContent = 'Copy Text', 2000);
+    } catch { alert('Select the text manually and press Ctrl+C.'); }
+  }
+</script>
+</body>
+</html>
