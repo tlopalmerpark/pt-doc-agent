@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PT Documentation Agent — Healing Institute</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F7F4EF;
+    --warm-white: #FDFCFA;
+    --ink: #1C1917;
+    --ink-soft: #44403C;
+    --ink-muted: #78716C;
+    --teal: #0F766E;
+    --teal-light: #CCFBF1;
+    --teal-mid: #5EEAD4;
+    --amber: #B45309;
+    --amber-light: #FEF3C7;
+    --red-soft: #FEF2F2;
+    --red: #DC2626;
+    --border: #E7E3DC;
+    --border-strong: #C9C3B8;
+    --shadow: 0 1px 3px rgba(28,25,23,0.08), 0 4px 16px rgba(28,25,23,0.04);
+    --shadow-lg: 0 4px 24px rgba(28,25,23,0.12), 0 1px 4px rgba(28,25,23,0.06);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--ink); min-height: 100vh; font-size: 15px; line-height: 1.6; }
+
+  header { background: var(--ink); padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 60px; position: sticky; top: 0; z-index: 100; }
+  .logo { font-family: 'DM Serif Display', serif; font-size: 1.25rem; color: var(--cream); letter-spacing: -0.01em; }
+  .logo span { color: var(--teal-mid); }
+  .header-badge { font-size: 11px; background: rgba(94,234,212,0.15); color: var(--teal-mid); border: 1px solid rgba(94,234,212,0.25); padding: 3px 10px; border-radius: 20px; letter-spacing: 0.05em; text-transform: uppercase; font-weight: 500; }
+
+  .letterhead { background: white; padding: 1.25rem 1.5rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 3px solid #0F766E; }
+  .letterhead-info { font-family: 'DM Sans', sans-serif; font-size: 12px; color: #44403C; line-height: 1.7; }
+  .letterhead-info .practice-name { font-size: 15px; font-weight: 600; color: #0F766E; margin-bottom: 2px; font-family: 'DM Serif Display', serif; }
+  .letterhead-info a { color: #0F766E; text-decoration: none; }
+  .letterhead-logo { height: 180px; width: auto; object-fit: contain; }
+
+  .container { max-width: 860px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+
+  .api-banner { background: var(--amber-light); border: 1px solid #FDE68A; border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 2rem; display: flex; align-items: flex-start; gap: 0.75rem; }
+  .api-banner .icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .api-banner p { font-size: 13px; color: var(--amber); line-height: 1.5; }
+  .api-key-row { display: flex; gap: 8px; margin-top: 0.5rem; }
+  .api-key-row input { flex: 1; font-size: 13px; padding: 6px 10px; border: 1px solid #FDE68A; border-radius: 6px; background: #FFFBEB; color: var(--ink); font-family: monospace; }
+  .api-key-row button { font-size: 12px; padding: 6px 14px; background: var(--amber); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 500; font-family: 'DM Sans', sans-serif; }
+
+  .note-type-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-muted); font-weight: 500; margin-bottom: 0.75rem; }
+  .note-tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 2rem; }
+  .note-tab { background: var(--warm-white); border: 1px solid var(--border); border-radius: 10px; padding: 0.875rem 0.75rem; cursor: pointer; text-align: center; transition: all 0.18s; }
+  .note-tab:hover { border-color: var(--border-strong); }
+  .note-tab.active { background: var(--ink); border-color: var(--ink); color: var(--cream); }
+  .note-tab .tab-icon { font-size: 18px; margin-bottom: 4px; display: block; }
+  .note-tab .tab-name { font-size: 13px; font-weight: 500; display: block; }
+  .note-tab .tab-time { font-size: 11px; opacity: 0.6; margin-top: 2px; display: block; }
+
+  .form-card { background: var(--warm-white); border: 1px solid var(--border); border-radius: 14px; padding: 1.75rem; box-shadow: var(--shadow); margin-bottom: 1.5rem; }
+  .form-card h2 { font-family: 'DM Serif Display', serif; font-size: 1.375rem; font-weight: 400; color: var(--ink); margin-bottom: 0.25rem; }
+  .form-card .subtitle { font-size: 13px; color: var(--ink-muted); margin-bottom: 1.5rem; line-height: 1.5; }
+  .form-section { display: none; }
+  .form-section.active { display: block; }
+
+  .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+  .field-grid.three { grid-template-columns: 1fr 1fr 1fr; }
+  .field-full { margin-bottom: 1rem; }
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  .field label { display: block; font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-muted); margin-bottom: 5px; }
+  .field input, .field select, .field textarea { width: 100%; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--ink); background: var(--cream); border: 1px solid var(--border); border-radius: 8px; padding: 9px 12px; transition: border-color 0.15s, box-shadow 0.15s; outline: none; }
+  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(15,118,110,0.1); }
+  .field textarea { min-height: 70px; resize: vertical; line-height: 1.5; }
+  .field input::placeholder, .field textarea::placeholder { color: var(--border-strong); }
+
+  .section-divider { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-muted); font-weight: 500; display: flex; align-items: center; gap: 0.75rem; margin: 1.25rem 0 1rem; }
+  .section-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* ── Accordion ── */
+  .accordion { border: 1px solid var(--border); border-radius: 10px; margin-bottom: 0.75rem; overflow: hidden; }
+  .accordion-header { display: flex; align-items: center; justify-content: space-between; padding: 0.875rem 1rem; cursor: pointer; background: var(--warm-white); transition: background 0.15s; user-select: none; }
+  .accordion-header:hover { background: #F3F0EB; }
+  .accordion-header.open { background: var(--teal); color: white; }
+  .accordion-title { font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+  .accordion-icon { font-size: 16px; }
+  .accordion-chevron { font-size: 12px; transition: transform 0.2s; }
+  .accordion-header.open .accordion-chevron { transform: rotate(180deg); }
+  .accordion-body { display: none; padding: 1rem; background: #FDFCFA; border-top: 1px solid var(--border); }
+  .accordion-body.open { display: block; }
+
+  /* ── Body part accordion (level 2) ── */
+  .bp-accordion { border: 1px solid var(--border); border-radius: 8px; margin-bottom: 0.5rem; overflow: hidden; }
+  .bp-header { display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 0.875rem; cursor: pointer; background: white; transition: background 0.15s; font-size: 13px; font-weight: 500; color: var(--ink-soft); }
+  .bp-header:hover { background: var(--teal-light); }
+  .bp-header.open { background: var(--teal-light); color: var(--teal); }
+  .bp-chevron { font-size: 11px; transition: transform 0.2s; }
+  .bp-header.open .bp-chevron { transform: rotate(180deg); }
+  .bp-body { display: none; padding: 0.75rem; background: #F9F7F4; border-top: 1px solid var(--border); }
+  .bp-body.open { display: block; }
+
+  /* ── Movement rows ── */
+  .movement-row { display: grid; grid-template-columns: 160px 90px 1fr; gap: 8px; align-items: center; margin-bottom: 6px; }
+  .movement-label { font-size: 12px; color: var(--ink-soft); font-weight: 500; }
+  .movement-input { font-size: 13px; padding: 5px 8px; border: 1px solid var(--border); border-radius: 6px; background: white; color: var(--ink); font-family: 'DM Sans', sans-serif; width: 100%; text-align: center; }
+  .movement-input:focus { outline: none; border-color: var(--teal); }
+  .movement-note { font-size: 12px; padding: 5px 8px; border: 1px solid var(--border); border-radius: 6px; background: white; color: var(--ink); font-family: 'DM Sans', sans-serif; width: 100%; }
+  .movement-note:focus { outline: none; border-color: var(--teal); }
+  .movement-header-row { display: grid; grid-template-columns: 160px 90px 1fr; gap: 8px; margin-bottom: 4px; }
+  .movement-col-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-muted); font-weight: 500; }
+
+  /* ── MMT rows ── */
+  .mmt-row { display: grid; grid-template-columns: 200px 80px 80px 1fr; gap: 8px; align-items: center; margin-bottom: 6px; }
+  .mmt-label { font-size: 12px; color: var(--ink-soft); font-weight: 500; }
+  .mmt-select { font-size: 13px; padding: 5px 6px; border: 1px solid var(--border); border-radius: 6px; background: white; color: var(--ink); font-family: 'DM Sans', sans-serif; width: 100%; }
+  .mmt-select:focus { outline: none; border-color: var(--teal); }
+  .mmt-header-row { display: grid; grid-template-columns: 200px 80px 80px 1fr; gap: 8px; margin-bottom: 4px; }
+
+  /* ── Checkboxes for Posture/Gait/Balance ── */
+  .check-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px; }
+  .check-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-soft); }
+  .check-item input[type="checkbox"] { width: 15px; height: 15px; accent-color: var(--teal); cursor: pointer; }
+  .notes-field { width: 100%; font-size: 13px; padding: 7px 10px; border: 1px solid var(--border); border-radius: 6px; background: white; color: var(--ink); font-family: 'DM Sans', sans-serif; resize: vertical; min-height: 55px; margin-top: 8px; }
+  .notes-field:focus { outline: none; border-color: var(--teal); }
+  .notes-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-muted); font-weight: 500; margin-top: 8px; margin-bottom: 3px; display: block; }
+
+  /* ── Special tests ── */
+  .special-test-row { display: grid; grid-template-columns: 200px 120px 1fr; gap: 8px; align-items: center; margin-bottom: 6px; }
+  .st-label { font-size: 12px; color: var(--ink-soft); font-weight: 500; }
+  .st-select { font-size: 13px; padding: 5px 6px; border: 1px solid var(--border); border-radius: 6px; background: white; color: var(--ink); font-family: 'DM Sans', sans-serif; width: 100%; }
+  .st-select:focus { outline: none; border-color: var(--teal); }
+
+  /* Buttons */
+  .btn-generate { display: flex; align-items: center; gap: 8px; background: var(--teal); color: white; border: none; border-radius: 10px; padding: 12px 24px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500; cursor: pointer; transition: all 0.18s; margin-top: 0.5rem; }
+  .btn-generate:hover { background: #0D6B63; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(15,118,110,0.3); }
+  .btn-generate:disabled { background: var(--ink-muted); cursor: not-allowed; transform: none; box-shadow: none; }
+  .btn-generate .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; display: none; }
+  .btn-generate.loading .spinner { display: block; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .output-card { background: var(--warm-white); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow-lg); overflow: hidden; display: none; animation: slideUp 0.3s ease; }
+  .output-card.visible { display: block; }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  .output-header { background: var(--ink); padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+  .output-header .output-title { font-family: 'DM Serif Display', serif; font-size: 1.1rem; color: var(--cream); font-weight: 400; }
+  .output-header .output-meta { font-size: 12px; color: rgba(247,244,239,0.5); margin-top: 2px; }
+  .output-actions { display: flex; gap: 8px; }
+  .btn-action { font-family: 'DM Sans', sans-serif; font-size: 12px; padding: 6px 14px; border-radius: 6px; border: 1px solid rgba(247,244,239,0.2); background: transparent; color: rgba(247,244,239,0.8); cursor: pointer; transition: all 0.15s; font-weight: 500; }
+  .btn-action:hover { background: rgba(247,244,239,0.1); color: var(--cream); }
+  .btn-action.print { background: rgba(94,234,212,0.15); border-color: rgba(94,234,212,0.3); color: var(--teal-mid); }
+  .output-body { padding: 1.75rem; font-size: 14px; line-height: 1.9; color: var(--ink); white-space: pre-wrap; font-family: 'DM Sans', sans-serif; max-height: 600px; overflow-y: auto; }
+  .output-footer { padding: 0.875rem 1.5rem; background: #F9F7F3; border-top: 1px solid var(--border); font-size: 12px; color: var(--ink-muted); }
+  .status-msg { font-size: 13px; color: var(--ink-muted); margin-top: 8px; min-height: 18px; }
+  .status-msg.error { color: var(--red); }
+
+  .hipaa-banner { background: var(--red-soft); border: 1px solid #FECACA; border-radius: 10px; padding: 1rem 1.25rem; margin-top: 2rem; font-size: 13px; color: #991B1B; line-height: 1.5; }
+
+  @media print {
+    header, .api-banner, .note-tabs, .form-card, .output-actions, .output-footer, .hipaa-banner, .note-type-label, #status-msg, #api-banner, .letterhead { display: none !important; }
+    .print-letterhead { display: flex !important; align-items: center; justify-content: space-between; border-bottom: 2px solid #0F766E; padding: 0.75rem 1rem; margin-bottom: 0; }
+    .print-letterhead .lh-logo { height: 140px; width: auto; }
+    .print-letterhead .lh-info { font-size: 11px; color: #44403C; line-height: 1.7; }
+    .print-letterhead .lh-name { font-size: 14px; font-weight: 600; color: #0F766E; margin-bottom: 2px; }
+    .output-card { display: block !important; box-shadow: none; border: none; }
+    .output-header { background: white; border-bottom: 1px solid #ddd; }
+    .output-header .output-title { color: #1c1917; font-size: 1rem; }
+    .output-header .output-meta { color: #666; }
+    .output-body { max-height: none; font-size: 12px; padding: 1rem 1.5rem; }
+    body { background: white; }
+    .container { padding: 0; max-width: 100%; }
+  }
+  @media (max-width: 600px) {
+    .note-tabs { grid-template-columns: 1fr 1fr; }
+    .movement-row { grid-template-columns: 120px 70px 1fr; }
+    .mmt-row { grid-template-columns: 150px 65px 65px 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">PT<span>Doc</span> Agent</div>
+  <div class="header-badge">Clinical AI</div>
+</header>
+
+<div class="letterhead">
+  <div class="letterhead-info">
+    <div class="practice-name">Healing Institute of Physical Therapy</div>
+    <div>9100 E Hampton Dr #A2, Capitol Heights, MD 20743</div>
+    <div>📞 301-909-8409 &nbsp;|&nbsp; Fax: 833-415-2008</div>
+    <div><a href="mailto:admin@healinginstitutept.com">admin@healinginstitutept.com</a></div>
+  </div>
+  <img class="letterhead-logo logo-img" src="" alt="Healing Institute Physical Therapy Logo">
+</div>
+
+<div class="container">
+
+  <div class="api-banner" id="api-banner">
+    <div class="icon">🔑</div>
+    <div style="flex:1">
+      <p><strong>Enter your Anthropic API key to get started.</strong> This stays in your browser and is never stored anywhere.</p>
+      <div class="api-key-row">
+        <input type="password" id="api-key-input" placeholder="sk-ant-api03-..." autocomplete="off">
+        <button onclick="saveApiKey()">Save Key</button>
+      </div>
+    </div>
+  </div>
+
+  <p class="note-type-label">Select note type</p>
+  <div class="note-tabs">
+    <div class="note-tab active" onclick="switchTab('eval', this)"><span class="tab-icon">📋</span><span class="tab-name">Initial Eval</span><span class="tab-time">First visit</span></div>
+    <div class="note-tab" onclick="switchTab('soap', this)"><span class="tab-icon">📝</span><span class="tab-name">SOAP Note</span><span class="tab-time">Daily visit</span></div>
+    <div class="note-tab" onclick="switchTab('progress', this)"><span class="tab-icon">📈</span><span class="tab-name">Progress Note</span><span class="tab-time">Bi-weekly</span></div>
+    <div class="note-tab" onclick="switchTab('discharge', this)"><span class="tab-icon">✅</span><span class="tab-name">Discharge</span><span class="tab-time">Final visit</span></div>
+  </div>
+
+  <div class="form-card">
+
+    <!-- ═══════════════════════════════════════ INITIAL EVALUATION ═══ -->
+    <div class="form-section active" id="section-eval">
+      <h2>Initial Evaluation</h2>
+      <p class="subtitle">Complete each section. Click any section header to expand or collapse it.</p>
+
+      <!-- Section 1: Patient & Visit (untitled) -->
+      <div class="field-grid" style="margin-bottom:1rem;">
+        <div class="field"><label>Patient Name / ID</label><input id="e-name" placeholder="e.g. J. Doe or Patient #1042"></div>
+        <div class="field"><label>Visit Date</label><input id="e-date" type="date"></div>
+      </div>
+      <div class="field-grid" style="margin-bottom:1.5rem;">
+        <div class="field"><label>Diagnosis / ICD-10 Code</label><input id="e-dx" placeholder="e.g. M54.5 – Low back pain"></div>
+        <div class="field"><label>Referring Physician</label><input id="e-md" placeholder="e.g. Dr. Smith, MD"></div>
+      </div>
+
+      <!-- Section 2: Clinical Findings (Subjective) -->
+      <div class="accordion">
+        <div class="accordion-header open" onclick="toggleAccordion(this)">
+          <div class="accordion-title"><span class="accordion-icon">📋</span> Clinical Findings (Subjective)</div>
+          <span class="accordion-chevron">▲</span>
+        </div>
+        <div class="accordion-body open">
+          <div class="field-full field"><label>Chief Complaint & Mechanism of Injury</label><textarea id="e-cc" placeholder="Patient reports gradual onset low back pain x 3 months after repetitive lifting at work..."></textarea></div>
+          <div class="field-grid">
+            <div class="field"><label>Pain Rating (0–10)</label><input id="e-pain" placeholder="e.g. 6/10 rest, 9/10 with bending"></div>
+            <div class="field"><label>Pain Quality</label><input id="e-pq" placeholder="e.g. aching, sharp with movement, stiff AM"></div>
+          </div>
+          <div class="field-full field"><label>Functional Limitations (ADLs, work, recreation)</label><textarea id="e-func" placeholder="Unable to sit more than 20 min, difficulty donning shoes/socks, cannot lift >10 lbs at work..."></textarea></div>
+          <div class="field-grid">
+            <div class="field"><label>Prior Level of Function</label><input id="e-plof" placeholder="e.g. Independent all ADLs, full-time work, recreational tennis"></div>
+            <div class="field"><label>Past Medical History</label><input id="e-pmh" placeholder="e.g. HTN, no prior PT, no surgeries"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Objective -->
+      <div class="accordion">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          <div class="accordion-title"><span class="accordion-icon">🔬</span> Objective Findings</div>
+          <span class="accordion-chevron">▼</span>
+        </div>
+        <div class="accordion-body">
+
+          <!-- Posture -->
+          <div class="bp-accordion">
+            <div class="bp-header" onclick="toggleBp(this)"><span>Posture Assessment</span><span class="bp-chevron">▼</span></div>
+            <div class="bp-body">
+              <div class="check-grid">
+                <label class="check-item"><input type="checkbox" id="post-forward-head"> Forward head posture</label>
+                <label class="check-item"><input type="checkbox" id="post-kyphosis"> Increased thoracic kyphosis</label>
+                <label class="check-item"><input type="checkbox" id="post-lordosis"> Increased lumbar lordosis</label>
+                <label class="check-item"><input type="checkbox" id="post-flat"> Flattened lumbar lordosis</label>
+                <label class="check-item"><input type="checkbox" id="post-scoliosis"> Scoliosis / lateral shift</label>
+                <label class="check-item"><input type="checkbox" id="post-shoulder"> Shoulder elevation / asymmetry</label>
+                <label class="check-item"><input type="checkbox" id="post-pelvis"> Pelvic tilt / asymmetry</label>
+                <label class="check-item"><input type="checkbox" id="post-wnl"> WNL — no significant deviations</label>
+              </div>
+              <span class="notes-label">Notes</span>
+              <textarea class="notes-field" id="post-notes" placeholder="Additional postural observations..."></textarea>
+            </div>
+          </div>
+
+          <!-- Gait -->
+          <div class="bp-accordion">
+            <div class="bp-header" onclick="toggleBp(this)"><span>Gait Assessment</span><span class="bp-chevron">▼</span></div>
+            <div class="bp-body">
+              <div class="check-grid">
+                <label class="check-item"><input type="checkbox" id="gait-antalgic"> Antalgic gait</label>
+                <label class="check-item"><input type="checkbox" id="gait-trendelenburg"> Trendelenburg gait</label>
+                <label class="check-item"><input type="checkbox" id="gait-steppage"> Steppage gait</label>
+                <label class="check-item"><input type="checkbox" id="gait-ataxic"> Ataxic gait</label>
+                <label class="check-item"><input type="checkbox" id="gait-reduced-arm"> Reduced arm swing</label>
+                <label class="check-item"><input type="checkbox" id="gait-reduced-stride"> Reduced stride length</label>
+                <label class="check-item"><input type="checkbox" id="gait-assistive"> Requires assistive device</label>
+                <label class="check-item"><input type="checkbox" id="gait-wnl"> WNL — no deviations noted</label>
+              </div>
+              <span class="notes-label">Assistive device / additional notes</span>
+              <textarea class="notes-field" id="gait-notes" placeholder="e.g. Uses single-point cane on right, walks with antalgic lean to left..."></textarea>
+            </div>
+          </div>
+
+          <!-- ROM -->
+          <div class="bp-accordion">
+            <div class="bp-header" onclick="toggleBp(this)"><span>Range of Motion (ROM)</span><span class="bp-chevron">▼</span></div>
+            <div class="bp-body">
+
+              <!-- Lumbar -->
+              <div class="bp-accordion" style="margin-bottom:6px;">
+                <div class="bp-header" onclick="toggleBp(this)"><span>Lumbar Spine</span><span class="bp-chevron">▼</span></div>
+                <div class="bp-body">
+                  <div class="movement-header-row"><span class="movement-col-label">Movement</span><span class="movement-col-label">Degrees °</span><span class="movement-col-label">Notes</span></div>
+                  <div class="movement-row"><span class="movement-label">Flexion</span><input class="movement-input" id="lum-flex" placeholder="60°"></div>
+                  <div class="movement-row"><span class="movement-label">Extension</span><input class="movement-input" id="lum-ext" placeholder="25°"></div>
+                  <div class="movement-row"><span class="movement-label">L Lateral Flexion</span><input class="movement-input" id="lum-lf-l" placeholder="25°"></div>
+                  <div class="movement-row"><span class="movement-label">R Lateral Flexion</span><input class="movement-input" id="lum-lf-r" placeholder="25°"></div>
+                  <div class="movement-row"><span class="movement-label">L Rotation</span><input class="movement-input" id="lum-rot-l" placeholder="30°"></div>
+                  <div class="movement-row"><span class="movement-label">R Rotation</span><input class="movement-input" id="lum-rot-r" placeholder="30°"></div>
+                  <span class="notes-label">Lumbar ROM Notes</span>
+                  <textarea class="notes-field" id="lum-notes" placeholder="e.g. Limited by pain at end range, aberrant movement with flexion..."></textarea>
+                </div>
+              </div>
+
+              <!-- Cervical -->
+              <div class="bp-accordion" style="margin-bottom:6px;">
+                <div class="bp-header" onclick="toggleBp(this)"><span>Cervical Spine</span><span class="bp-chevron">▼</span></div>
+                <div class="bp-body">
+                  <div class="movement-header-row"><span class="movement-col-label">Movement</span><span class="movement-col-label">Degrees °</span><span class="movement-col-label">Notes</span></div>
+                  <div class="movement-row"><span class="movement-label">Flexion</span><input class="movement-input" id="cer-flex" placeholder="45°"></div>
+                  <div class="movement-row"><span class="movement-label">Extension</span><input class="movement-input" id="cer-ext" placeholder="45°"></div>
+                  <div class="movement-row"><span class="movement-label">L Lateral Flexion</span><input class="movement-input" id="cer-lf-l" placeholder="45°"></div>
+                  <div class="movement-row"><span class="movement-label">R Lateral Flexion</span><input class="movement-input" id="cer-lf-r" placeholder="45°"></div>
+                  <div class="movement-row"><span class="movement-label">L Rotation</span><input class="movement-input" id="cer-rot-l" placeholder="60°"></div>
+                  <div class="movement-row"><span class="movement-label">R Rotation</span><input class="movement-input" id="cer-rot-r" placeholder="60°"></div>
+                  <span class="notes-label">Cervical ROM Notes</span>
+                  <textarea class="notes-field" id="cer-notes" placeholder=""></textarea>
+                </div>
+              </div>
+
+              <!-- Thoracic -->
+              <div class="bp-accordion" style="margin-bottom:6px;">
+                <div class="bp-header" onclick="toggleBp(this)"><span>Thoracic Spine</span><span class="bp-chevron">▼</span></div>
+                <div class="bp-body">
+                  <div class="movement-header-row"><span class="movement-col-label">Movement</span><span class="movement-col-label">Degrees °</span><span class="movement-col-label">Notes</span></div>
+                  <div class="movement-row"><span class="movement-label">Flexion</span><input class="movement-input" id="thor-flex" placeholder=""></div>
+                  <div class="movement-row"><span class="movement-label">Extension</span><input class="movement-input" id="thor-ext" placeholder=""></div>
+                  <div class="movement-row"><span class="movement-label">L Rotation</span><input class="movement-input" id="thor-rot-l" placeholder=""></div>
+                  <div class="movement-row"><span class="movement-label">R Rotation</span><input class="movement-input" id="thor-rot-r" placeholder=""></div>
+                  <span class="notes-label">Thoracic ROM Notes</span>
+                  <textarea class="notes-field" id="thor-notes" placeholder=""></textarea>
+                </div>
+              </div>
+
+              <!-- Shoulder -->
+              <div class="bp-accordion" style="margin-bottom:6px;">
+                <div class="bp-header" onclick="toggleBp(this)"><span>Shoulder</span><span class="bp-chevron">▼</span></div>
+                <div class="bp-body">
+                  <div class="movement-header-row"><span class="movement-col-label">Movement</span><span class="movement-col-label">L °</span><span class="movement-col-label">R °</span></div>
+                  <div class="movement-row"><span class="movement-label">Flexion</span><input class="movement-input" id="sh-flex-l" placeholder="180°"><input class="movement-input" id="sh-flex-r" placeholder="180°"></div>
+                  <div class="movement-row"><span class="movement-label">Extension</span><input class="movement-input" id="sh-ext-l" placeholder="60°"><input class="movement-input" id="sh-ext-r" placeholder="60°"></div>
+                  <div class="movement-row"><span class="movement-label">Abduction</span><input class="movement-input" id="sh-abd-l" placeholder="180°"><input class="movement-input" id="sh-abd-r" placeholder="180°"></div>
+                  <div class="movement-row"><span class="movement-label">Int Rotation</span><input class="movement-input" id="sh-ir-l" placeholder="70°"><input class="movement-input" id="sh-ir-r" placeholder="70°"></div>
+                  <div class="movement-row"><span class="movement-label">Ext Rotation</span><input class="movement-input" id="sh-er-l" placeholder="90°"><input class="movement-input" id="sh-er-r" placeholder="90°"></div>
+                  <span class="notes-label">Shoulder ROM Notes</span>
+                  <textarea class="notes-field" id="sh-notes" placeholder="e.g. Pain arc 70–120° abduction R shoulder..."></textarea>
+                </div>
+              </div>
+
+              <!-- Elbow -->
+              <div class="bp-accordion" style="margin-bottom:6px;">
+                <div class="bp-header" onclick="toggleBp(this)"><span>Elbow</span><span class="bp-chevron">▼</span></div>
+                <div class="bp-body">
+                  <div class="movement-header-row"><span class="movement-col-label">Movement</span><span class="movement-col-label">L °</span><span class="movement-col-label">R °</span></div>
+                  <div class="movement-row"><span class="movement-label">Flexion</span><input class="movement-input" id="el-flex-l" placeholder="150°"><input class="movement-input" id="el-flex-r" placeholder="150°"></div>
+                  <div class="movement-row"><span class="movement-label">Extension</span><input class="movement-input" id="el-ext-l" placeholder="0°"><input class="movement-input" id="el-ext-r" placeholder="0°"></div>
+                  <div class="movement-row"><span class="movement-label">Pronation</span><input class="movement-input" id="el-pro-l" placeholder="80°"><input class="movement-input" id="el-pro-r" placeholder="80°"></div>
+                  <div class="movement-row"><span class="movement-label">Supination</span><input class="movement-input" id="el-sup-l" placeholder="80°"><input class="movement-input" id="el-sup-r" placeholder="80°"></div>
+                  <span class="notes-label">Elbow Notes</span>
+                  <textarea class="notes-field" id="el-notes" placeholder=""></textarea>
+                </div>
+              </div>
+
+              <!-- Wrist -->
+              <div class="bp-accordion" style="margin-bottom:6px;">
+                <div class="bp-header" onclick="toggleBp(this)"><span>Wrist</span><span class="bp-chevron">▼</span></div>
+                <div class="bp-body">
+                  <div class="movement-header-row"><span class="movement-col-label">Movement</span><span class="movement-col-label">L °</span><span class="movement-col-label">R °</span></div>
+                  <div class="movement-row"><span class="movement-label">Flexion</span><input class="movement-input" id="wr-flex-l" placeholder="80°"><input class="movement-input" id="wr-flex-r" placeholder="80°"></div>
+                  <div class="movement-row"><span class="movement-label">Extension</span><input class="movement-input" id="wr-ext-l" placeholder="70°"><input class="movement-input" id="wr-ext-r" placeholder="70°"></div>
+                  <div class="movement-row"><span class="movement-label">Radial Deviation</span><input class="movement-input" id="wr-rad-l" placeholder="20°"><input class="movement-input" id="wr-rad-r" placeholder="20°"></div>
+                  <div class="movement-row"><span class="movement-label">Ulnar Deviation</span><input class="movement-input" id="wr-uln-l" placeholder="30°"><input class="movement-input" id="wr-uln-r" placeholder="30°"></div>
+                  <span class="notes-label">Wrist Notes</span>
+                  <textarea class="notes-field" id="wr-notes" placeholder=""></textarea>
+                </div>
+              </div>
+
+              <!-- Hip -->
+              <div class="bp-accordion" style="margin-bottom:6px;">
+                <div class="bp-header" onclick="toggleBp(this)"><span>Hip</span><span class="bp-chevron">▼</span></div>
+                <div class="bp-body">
+                  <div class="movement-header-row"><span class="movement-col-label">Movement</span><span class="movement-col-label">L °</span><span class="movement-col-label">R °</span></div>
+                  <div class="movement-row"><span class="movement-label">Flexion</span><input class="movement-input" id="hip-flex-l" placeholder="120°"><input class="movement-input" id="hip-flex-r" placeholder="120°"></div>
+                  <div class="movement-row"><span class="movement-label">Extension</span><input class="movement-input" id="hip-ext-l" placeholder="30°"><input class="movement-input" id="hip-ext-r" placeholder="30°"></div>
+                  <div class="movement-row"><span class="movement-label">Abduction</span><input class="movement-input" id="hip-abd-l" placeholder="45°"><input class="movement-input" id="hip-abd-r" placeholder="45°"></div>
+                  <div class="movement-row"><span class="movement-label">Adduction</span><input class="movement-input" id="hip-add-l" placeholder="30°"><input class="movement-input" id="hip-add-r" placeholder="30°"></div>
+                  <div class="movement-row"><span class="movement-label">Int Rotation</span><input class="movement-input" id="hip-ir-l" placeholder="45°"><input class="movement-input" id="hip-ir-r" placeholder="45°"></div>
+                  <div class="movement-row"><span class="movement-label">Ext Rotation</span><input class="movement-input" id="hip-er-l" placeholder="45°"><input class="movement-input" id="hip-er-r" placeholder="45°"></div>
+                  <span class="notes-label">Hip ROM Notes</span>
+                  <textarea class="notes-field" id="hip-notes" placeholder=""></textarea>
+                </div>
+              </div>
+
+              <!-- Knee -->
+              <div class="bp-accordion" style="margin-bottom:6px;">
+                <div class="bp-header" onclick="toggleBp(this)"><span>Knee</span><span class="bp-chevron">▼</span></div>
+                <div class="bp-body">
+                  <div class="movement-header-row"><span class="movement-col-label">Movement</span><span class="movement-col-label">L °</span><span class="movement-col-label">R °</span></div>
+                  <div class="movement-row"><span class="movement-label">Flexion</span><input class="movement-input" id="kn-flex-l" placeholder="135°"><input class="movement-input" id="kn-flex-r" placeholder="135°"></div>
+                  <div class="movement-row"><span class="movement-label">Extension</span><input class="movement-input" id="kn-ext-l" placeholder="0°"><input class="movement-input" id="kn-ext-r" placeholder="0°"></div>
+                  <span class="notes-label">Knee ROM Notes</span>
+                  <textarea class="notes-field" id="kn-notes" placeholder="e.g. -10° extension deficit right knee, crepitus with flexion..."></textarea>
+                </div>
+              </div>
+
+              <!-- Ankle -->
+              <div class="bp-accordion" style="margin-bottom:6px;">
+                <div class="bp-header" onclick="toggleBp(this)"><span>Ankle / Foot</span><span class="bp-chevron">▼</span></div>
+                <div class="bp-body">
+                  <div class="movement-header-row"><span class="movement-col-label">Movement</span><span class="movement-col-label">L °</span><span class="movement-col-label">R °</span></div>
+                  <div class="movement-row"><span class="movement-label">Dorsiflexion</span><input class="movement-input" id="ank-df-l" placeholder="20°"><input class="movement-input" id="ank-df-r" placeholder="20°"></div>
+                  <div class="movement-row"><span class="movement-label">Plantarflexion</span><input class="movement-input" id="ank-pf-l" placeholder="50°"><input class="movement-input" id="ank-pf-r" placeholder="50°"></div>
+                  <div class="movement-row"><span class="movement-label">Inversion</span><input class="movement-input" id="ank-inv-l" placeholder="35°"><input class="movement-input" id="ank-inv-r" placeholder="35°"></div>
+                  <div class="movement-row"><span class="movement-label">Eversion</span><input class="movement-input" id="ank-ev-l" placeholder="20°"><input class="movement-input" id="ank-ev-r" placeholder="20°"></div>
+                  <span class="notes-label">Ankle/Foot Notes</span>
+                  <textarea class="notes-field" id="ank-notes" placeholder=""></textarea>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- MMT -->
+          <div class="bp-accordion">
+            <div class="bp-header" onclick="toggleBp(this)"><span>Muscle Strength (MMT)</span><span class="bp-chevron">▼</span></div>
+            <div class="bp-body">
+
+              <div class="bp-accordion" style="margin-bottom:6px;">
+                <div class="bp-header" onclick="toggleBp(this)"><span>Trunk / Core</span><span class="bp-chevron">▼</span></div>
+                <div class="bp-body">
+                  <div class="mmt-header-row"><span class="movement-col-label">Muscle Group</span><span class="movement-col-label">Left</span><span class="movement-col-label">Right</span><span class="movement-col-label">Notes</span></div>
+                  <div class="mmt-row"><span class="mmt-label">Abdominals</span><select class="mmt-select" id="mmt-abd-l"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><select class="mmt-select" id="mmt-abd-r"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><input class="movement-note" id="mmt-abd-n" placeholder="notes"></div>
+                  <div class="mmt-row"><span class="mmt-label">Back Extensors</span><select class="mmt-select" id="mmt-bext-l"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><select class="mmt-select" id="mmt-bext-r"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><input class="movement-note" id="mmt-bext-n" placeholder="notes"></div>
+                </div>
+              </div>
+
+              <div class="bp-accordion" style="margin-bottom:6px;">
+                <div class="bp-header" onclick="toggleBp(this)"><span>Shoulder / Upper Extremity</span><span class="bp-chevron">▼</span></div>
+                <div class="bp-body">
+                  <div class="mmt-header-row"><span class="movement-col-label">Muscle Group</span><span class="movement-col-label">Left</span><span class="movement-col-label">Right</span><span class="movement-col-label">Notes</span></div>
+                  <div class="mmt-row"><span class="mmt-label">Shoulder Flexors</span><select class="mmt-select" id="mmt-shf-l"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><select class="mmt-select" id="mmt-shf-r"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><input class="movement-note" id="mmt-shf-n" placeholder="notes"></div>
+                  <div class="mmt-row"><span class="mmt-label">Shoulder Abductors</span><select class="mmt-select" id="mmt-sha-l"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><select class="mmt-select" id="mmt-sha-r"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><input class="movement-note" id="mmt-sha-n" placeholder="notes"></div>
+                  <div class="mmt-row"><span class="mmt-label">Elbow Flexors</span><select class="mmt-select" id="mmt-elf-l"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><select class="mmt-select" id="mmt-elf-r"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><input class="movement-note" id="mmt-elf-n" placeholder="notes"></div>
+                  <div class="mmt-row"><span class="mmt-label">Grip Strength</span><select class="mmt-select" id="mmt-grip-l"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><select class="mmt-select" id="mmt-grip-r"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><input class="movement-note" id="mmt-grip-n" placeholder="notes"></div>
+                </div>
+              </div>
+
+              <div class="bp-accordion" style="margin-bottom:6px;">
+                <div class="bp-header" onclick="toggleBp(this)"><span>Hip / Lower Extremity</span><span class="bp-chevron">▼</span></div>
+                <div class="bp-body">
+                  <div class="mmt-header-row"><span class="movement-col-label">Muscle Group</span><span class="movement-col-label">Left</span><span class="movement-col-label">Right</span><span class="movement-col-label">Notes</span></div>
+                  <div class="mmt-row"><span class="mmt-label">Hip Flexors</span><select class="mmt-select" id="mmt-hipf-l"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><select class="mmt-select" id="mmt-hipf-r"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><input class="movement-note" id="mmt-hipf-n" placeholder="notes"></div>
+                  <div class="mmt-row"><span class="mmt-label">Hip Extensors</span><select class="mmt-select" id="mmt-hipe-l"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><select class="mmt-select" id="mmt-hipe-r"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><input class="movement-note" id="mmt-hipe-n" placeholder="notes"></div>
+                  <div class="mmt-row"><span class="mmt-label">Hip Abductors</span><select class="mmt-select" id="mmt-hipa-l"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><select class="mmt-select" id="mmt-hipa-r"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><input class="movement-note" id="mmt-hipa-n" placeholder="notes"></div>
+                  <div class="mmt-row"><span class="mmt-label">Knee Extensors (Quads)</span><select class="mmt-select" id="mmt-kne-l"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><select class="mmt-select" id="mmt-kne-r"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><input class="movement-note" id="mmt-kne-n" placeholder="notes"></div>
+                  <div class="mmt-row"><span class="mmt-label">Knee Flexors (Hamstrings)</span><select class="mmt-select" id="mmt-knf-l"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><select class="mmt-select" id="mmt-knf-r"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><input class="movement-note" id="mmt-knf-n" placeholder="notes"></div>
+                  <div class="mmt-row"><span class="mmt-label">Ankle Dorsiflexors</span><select class="mmt-select" id="mmt-ankd-l"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><select class="mmt-select" id="mmt-ankd-r"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><input class="movement-note" id="mmt-ankd-n" placeholder="notes"></div>
+                  <div class="mmt-row"><span class="mmt-label">Ankle Plantarflexors</span><select class="mmt-select" id="mmt-ankp-l"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><select class="mmt-select" id="mmt-ankp-r"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>2+</option><option>3</option><option>3+</option><option>4</option><option>4+</option><option>5</option></select><input class="movement-note" id="mmt-ankp-n" placeholder="notes"></div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Special Tests -->
+          <div class="bp-accordion">
+            <div class="bp-header" onclick="toggleBp(this)"><span>Special Tests</span><span class="bp-chevron">▼</span></div>
+            <div class="bp-body">
+              <div class="special-test-row" style="margin-bottom:4px;"><span class="movement-col-label" style="font-size:10px;">Test Name</span><span class="movement-col-label" style="font-size:10px;">Result</span><span class="movement-col-label" style="font-size:10px;">Notes</span></div>
+              <div class="special-test-row"><span class="st-label">SLR (Straight Leg Raise)</span><select class="st-select" id="st-slr"><option value="">—</option><option>Positive L</option><option>Positive R</option><option>Positive Bilateral</option><option>Negative</option></select><input class="movement-note" id="st-slr-n" placeholder="at what degree, symptoms reproduced..."></div>
+              <div class="special-test-row"><span class="st-label">Slump Test</span><select class="st-select" id="st-slump"><option value="">—</option><option>Positive L</option><option>Positive R</option><option>Positive Bilateral</option><option>Negative</option></select><input class="movement-note" id="st-slump-n" placeholder=""></div>
+              <div class="special-test-row"><span class="st-label">Spurling's Test</span><select class="st-select" id="st-spurling"><option value="">—</option><option>Positive L</option><option>Positive R</option><option>Positive Bilateral</option><option>Negative</option></select><input class="movement-note" id="st-spurling-n" placeholder=""></div>
+              <div class="special-test-row"><span class="st-label">FABER</span><select class="st-select" id="st-faber"><option value="">—</option><option>Positive L</option><option>Positive R</option><option>Positive Bilateral</option><option>Negative</option></select><input class="movement-note" id="st-faber-n" placeholder=""></div>
+              <div class="special-test-row"><span class="st-label">FADIR</span><select class="st-select" id="st-fadir"><option value="">—</option><option>Positive L</option><option>Positive R</option><option>Positive Bilateral</option><option>Negative</option></select><input class="movement-note" id="st-fadir-n" placeholder=""></div>
+              <div class="special-test-row"><span class="st-label">Hawkins-Kennedy</span><select class="st-select" id="st-hawk"><option value="">—</option><option>Positive L</option><option>Positive R</option><option>Positive Bilateral</option><option>Negative</option></select><input class="movement-note" id="st-hawk-n" placeholder=""></div>
+              <div class="special-test-row"><span class="st-label">Neer's Sign</span><select class="st-select" id="st-neer"><option value="">—</option><option>Positive L</option><option>Positive R</option><option>Positive Bilateral</option><option>Negative</option></select><input class="movement-note" id="st-neer-n" placeholder=""></div>
+              <div class="special-test-row"><span class="st-label">McMurray's Test</span><select class="st-select" id="st-mcm"><option value="">—</option><option>Positive L</option><option>Positive R</option><option>Positive Bilateral</option><option>Negative</option></select><input class="movement-note" id="st-mcm-n" placeholder=""></div>
+              <div class="special-test-row"><span class="st-label">Lachman's Test</span><select class="st-select" id="st-lach"><option value="">—</option><option>Positive L</option><option>Positive R</option><option>Positive Bilateral</option><option>Negative</option></select><input class="movement-note" id="st-lach-n" placeholder=""></div>
+              <span class="notes-label">Additional Special Tests</span>
+              <textarea class="notes-field" id="st-other" placeholder="Any other tests performed and results..."></textarea>
+            </div>
+          </div>
+
+          <!-- Sensation -->
+          <div class="bp-accordion">
+            <div class="bp-header" onclick="toggleBp(this)"><span>Sensation / Neurological Screen</span><span class="bp-chevron">▼</span></div>
+            <div class="bp-body">
+              <div class="check-grid">
+                <label class="check-item"><input type="checkbox" id="sens-intact"> Sensation intact throughout</label>
+                <label class="check-item"><input type="checkbox" id="sens-reduced"> Reduced sensation</label>
+                <label class="check-item"><input type="checkbox" id="sens-absent"> Absent sensation</label>
+                <label class="check-item"><input type="checkbox" id="sens-paresthesia"> Paresthesia / tingling</label>
+                <label class="check-item"><input type="checkbox" id="sens-numbness"> Numbness reported</label>
+                <label class="check-item"><input type="checkbox" id="sens-reflexes"> Reflexes WNL</label>
+              </div>
+              <span class="notes-label">Neurological Notes</span>
+              <textarea class="notes-field" id="sens-notes" placeholder="Dermatome testing, reflex grading, specific areas affected..."></textarea>
+            </div>
+          </div>
+
+          <!-- Palpation -->
+          <div class="bp-accordion">
+            <div class="bp-header" onclick="toggleBp(this)"><span>Palpation / Soft Tissue</span><span class="bp-chevron">▼</span></div>
+            <div class="bp-body">
+              <div class="check-grid">
+                <label class="check-item"><input type="checkbox" id="palp-tender"> Point tenderness</label>
+                <label class="check-item"><input type="checkbox" id="palp-spasm"> Muscle spasm</label>
+                <label class="check-item"><input type="checkbox" id="palp-tightness"> Soft tissue tightness</label>
+                <label class="check-item"><input type="checkbox" id="palp-trigger"> Trigger points</label>
+                <label class="check-item"><input type="checkbox" id="palp-edema"> Edema / swelling</label>
+                <label class="check-item"><input type="checkbox" id="palp-warmth"> Warmth / inflammation</label>
+              </div>
+              <span class="notes-label">Palpation Notes</span>
+              <textarea class="notes-field" id="palp-notes" placeholder="Location, severity, tissue quality..."></textarea>
+            </div>
+          </div>
+
+          <!-- Functional Mobility -->
+          <div class="bp-accordion">
+            <div class="bp-header" onclick="toggleBp(this)"><span>Functional Mobility</span><span class="bp-chevron">▼</span></div>
+            <div class="bp-body">
+              <div class="special-test-row" style="margin-bottom:4px;"><span class="movement-col-label" style="font-size:10px;">Task</span><span class="movement-col-label" style="font-size:10px;">Status</span><span class="movement-col-label" style="font-size:10px;">Notes</span></div>
+              <div class="special-test-row"><span class="st-label">Sit to Stand</span><select class="st-select" id="fm-sts"><option value="">—</option><option>Independent</option><option>Modified Indep.</option><option>Supervision</option><option>Min Assist</option><option>Mod Assist</option><option>Max Assist</option><option>Dependent</option></select><input class="movement-note" id="fm-sts-n" placeholder="e.g. uses armrests, 3 attempts"></div>
+              <div class="special-test-row"><span class="st-label">Ambulation</span><select class="st-select" id="fm-amb"><option value="">—</option><option>Independent</option><option>Modified Indep.</option><option>Supervision</option><option>Min Assist</option><option>Mod Assist</option><option>Max Assist</option><option>Dependent</option></select><input class="movement-note" id="fm-amb-n" placeholder="distance, assistive device"></div>
+              <div class="special-test-row"><span class="st-label">Stairs</span><select class="st-select" id="fm-stair"><option value="">—</option><option>Independent</option><option>Modified Indep.</option><option>Supervision</option><option>Min Assist</option><option>Mod Assist</option><option>Max Assist</option><option>Dependent</option><option>Not tested</option></select><input class="movement-note" id="fm-stair-n" placeholder="step-over-step vs step-to-step"></div>
+              <div class="special-test-row"><span class="st-label">Bed Mobility</span><select class="st-select" id="fm-bed"><option value="">—</option><option>Independent</option><option>Modified Indep.</option><option>Supervision</option><option>Min Assist</option><option>Mod Assist</option><option>Max Assist</option><option>Dependent</option><option>Not tested</option></select><input class="movement-note" id="fm-bed-n" placeholder=""></div>
+              <span class="notes-label">Functional Mobility Notes</span>
+              <textarea class="notes-field" id="fm-notes" placeholder="Additional observations..."></textarea>
+            </div>
+          </div>
+
+          <!-- Balance -->
+          <div class="bp-accordion">
+            <div class="bp-header" onclick="toggleBp(this)"><span>Balance Assessment</span><span class="bp-chevron">▼</span></div>
+            <div class="bp-body">
+              <div class="check-grid">
+                <label class="check-item"><input type="checkbox" id="bal-static-intact"> Static balance intact</label>
+                <label class="check-item"><input type="checkbox" id="bal-dynamic-intact"> Dynamic balance intact</label>
+                <label class="check-item"><input type="checkbox" id="bal-static-impaired"> Static balance impaired</label>
+                <label class="check-item"><input type="checkbox" id="bal-dynamic-impaired"> Dynamic balance impaired</label>
+                <label class="check-item"><input type="checkbox" id="bal-romberg"> Romberg positive</label>
+                <label class="check-item"><input type="checkbox" id="bal-fall-risk"> Fall risk identified</label>
+              </div>
+              <span class="notes-label">Balance / TUG Test / Berg Score Notes</span>
+              <textarea class="notes-field" id="bal-notes" placeholder="TUG time, Berg score, single leg stance times, specific deficits..."></textarea>
+            </div>
+          </div>
+
+          <!-- Edema -->
+          <div class="bp-accordion">
+            <div class="bp-header" onclick="toggleBp(this)"><span>Edema / Swelling</span><span class="bp-chevron">▼</span></div>
+            <div class="bp-body">
+              <div class="check-grid">
+                <label class="check-item"><input type="checkbox" id="edema-none"> No edema noted</label>
+                <label class="check-item"><input type="checkbox" id="edema-mild"> Mild edema</label>
+                <label class="check-item"><input type="checkbox" id="edema-mod"> Moderate edema</label>
+                <label class="check-item"><input type="checkbox" id="edema-severe"> Severe edema</label>
+                <label class="check-item"><input type="checkbox" id="edema-pitting"> Pitting edema</label>
+                <label class="check-item"><input type="checkbox" id="edema-non-pitting"> Non-pitting edema</label>
+              </div>
+              <span class="notes-label">Edema Location & Measurements</span>
+              <textarea class="notes-field" id="edema-notes" placeholder="e.g. 2+ pitting edema right ankle, girth measurement 28cm (L) vs 31cm (R)..."></textarea>
+            </div>
+          </div>
+
+          <!-- Skin -->
+          <div class="bp-accordion">
+            <div class="bp-header" onclick="toggleBp(this)"><span>Skin / Wound Assessment</span><span class="bp-chevron">▼</span></div>
+            <div class="bp-body">
+              <div class="check-grid">
+                <label class="check-item"><input type="checkbox" id="skin-intact"> Skin intact</label>
+                <label class="check-item"><input type="checkbox" id="skin-scar"> Surgical scar present</label>
+                <label class="check-item"><input type="checkbox" id="skin-wound"> Open wound</label>
+                <label class="check-item"><input type="checkbox" id="skin-bruising"> Bruising / ecchymosis</label>
+                <label class="check-item"><input type="checkbox" id="skin-redness"> Redness / erythema</label>
+                <label class="check-item"><input type="checkbox" id="skin-na"> Not assessed</label>
+              </div>
+              <span class="notes-label">Skin / Wound Notes</span>
+              <textarea class="notes-field" id="skin-notes" placeholder="Location, size, stage, drainage if applicable..."></textarea>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Frequency / Duration -->
+      <div class="section-divider" style="margin-top:1.25rem;">Plan of Care</div>
+      <div class="field-grid">
+        <div class="field"><label>Recommended Frequency</label><input id="e-freq" placeholder="e.g. 3x/week"></div>
+        <div class="field"><label>Duration</label><input id="e-dur" placeholder="e.g. 6 weeks"></div>
+      </div>
+
+    </div>
+
+    <!-- ═══════════════════════════════════════ SOAP NOTE ═══ -->
+    <div class="form-section" id="section-soap">
+      <h2>Daily SOAP Note</h2>
+      <p class="subtitle">Document today's visit. The AI will write a complete SOAP note with skilled care justification and billing codes.</p>
+      <div class="field-grid three">
+        <div class="field"><label>Patient Name / ID</label><input id="s-name" placeholder="J. Doe"></div>
+        <div class="field"><label>Visit Number</label><input id="s-visit" placeholder="e.g. Visit 5 of 18"></div>
+        <div class="field"><label>Diagnosis / ICD-10</label><input id="s-dx" placeholder="M54.5"></div>
+      </div>
+      <div class="section-divider">S — Subjective</div>
+      <div class="field field-full"><label>Patient's report today</label><textarea id="s-sub" placeholder="Patient reports pain improved to 4/10 at rest since last visit..."></textarea></div>
+      <div class="section-divider">O — Objective</div>
+      <div class="field field-full"><label>Measurements & interventions performed</label><textarea id="s-obj" placeholder="Lumbar flexion 55°. Therapeutic exercise x30 min, manual therapy x15 min..."></textarea></div>
+      <div class="section-divider">A — Assessment & P — Plan</div>
+      <div class="field-grid">
+        <div class="field"><label>Response to treatment</label><input id="s-resp" placeholder="Tolerated all interventions well"></div>
+        <div class="field"><label>Progress toward goals</label><input id="s-prog" placeholder="Steady progress, STG 1 at 60%"></div>
+      </div>
+      <div class="field field-full"><label>Plan</label><textarea id="s-plan" placeholder="Continue current POC. Progress core stabilization next visit..."></textarea></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════ PROGRESS NOTE ═══ -->
+    <div class="form-section" id="section-progress">
+      <h2>Progress Note</h2>
+      <p class="subtitle">Covers multiple visits. Strong medical necessity language for continued authorization.</p>
+      <div class="field-grid">
+        <div class="field"><label>Patient Name / ID</label><input id="p-name" placeholder="J. Doe"></div>
+        <div class="field"><label>Dates / Visit Range</label><input id="p-dates" placeholder="Weeks 3–4, Visits 7–12"></div>
+      </div>
+      <div class="field-grid">
+        <div class="field"><label>Diagnosis</label><input id="p-dx" placeholder="M54.5 – Low back pain"></div>
+        <div class="field"><label>Insurance / Payer</label><input id="p-ins" placeholder="Medicare, Blue Cross, etc."></div>
+      </div>
+      <div class="section-divider">Goals & Progress</div>
+      <div class="field field-full"><label>Short-term & long-term goals (from initial eval)</label><textarea id="p-goals" placeholder="STG 1: Reduce pain to ≤3/10 — Status: MET&#10;LTG 1: Return to full-time work — IN PROGRESS"></textarea></div>
+      <div class="field field-full"><label>Objective measurements this period (compare to baseline)</label><textarea id="p-meas" placeholder="Pain: 2/10 (was 6/10). Lumbar flexion: 58° (was 40°)..."></textarea></div>
+      <div class="field field-full"><label>Remaining deficits & barriers to discharge</label><textarea id="p-barriers" placeholder="Persistent morning stiffness, limited standing tolerance..."></textarea></div>
+      <div class="field field-full"><label>Justification for continued skilled PT</label><textarea id="p-just" placeholder="Patient has not yet reached prior level of function..."></textarea></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════ DISCHARGE ═══ -->
+    <div class="form-section" id="section-discharge">
+      <h2>Discharge Summary</h2>
+      <p class="subtitle">Close out the episode of care with final outcomes and recommendations.</p>
+      <div class="field-grid">
+        <div class="field"><label>Patient Name / ID</label><input id="d-name" placeholder="J. Doe"></div>
+        <div class="field"><label>Total Visits / Duration</label><input id="d-visits" placeholder="18 visits over 6 weeks"></div>
+      </div>
+      <div class="field-grid">
+        <div class="field"><label>Diagnosis</label><input id="d-dx" placeholder="M54.5 – Low back pain"></div>
+        <div class="field"><label>Discharge Status</label><input id="d-status" placeholder="Goals met, returning to full duty"></div>
+      </div>
+      <div class="section-divider">Outcomes</div>
+      <div class="field field-full"><label>Final objective measurements (vs. initial)</label><textarea id="d-outcomes" placeholder="Pain: 1/10 (was 6/10). Lumbar flexion: 58° (was 40°)..."></textarea></div>
+      <div class="field field-full"><label>Goal achievement status</label><textarea id="d-goals" placeholder="STG 1 – Pain ≤3/10: MET&#10;LTG 1 – Return to full-time work: MET"></textarea></div>
+      <div class="section-divider">Discharge Plan</div>
+      <div class="field field-full"><label>Home exercise program prescribed</label><textarea id="d-hep" placeholder="10-exercise program: lumbar stabilization, hip strengthening..."></textarea></div>
+      <div class="field field-full"><label>Recommendations & follow-up</label><textarea id="d-rec" placeholder="Return to PT PRN. Follow up with MD in 6 weeks..."></textarea></div>
+    </div>
+
+    <div style="display:flex; align-items:center; gap:1rem; flex-wrap:wrap; margin-top:1rem;">
+      <button class="btn-generate" id="gen-btn" onclick="generate()">
+        <div class="spinner"></div>
+        <span class="btn-text">Generate Note</span>
+      </button>
+      <div class="status-msg" id="status-msg"></div>
+    </div>
+  </div>
+
+  <!-- Output -->
+  <div class="output-card" id="output-card">
+    <div class="print-letterhead" style="display:none;">
+      <div class="lh-info">
+        <div class="lh-name">Healing Institute of Physical Therapy</div>
+        <div>9100 E Hampton Dr #A2, Capitol Heights, MD 20743</div>
+        <div>&#128222; 301-909-8409 &nbsp;|&nbsp; Fax: 833-415-2008</div>
+        <div>admin@healinginstitutept.com</div>
+      </div>
+      <img class="lh-logo logo-img" src="" alt="Healing Institute PT Logo">
+    </div>
+    <div class="output-header">
+      <div>
+        <div class="output-title" id="output-title">Generated Note</div>
+        <div class="output-meta" id="output-meta"></div>
+      </div>
+      <div class="output-actions">
+        <button class="btn-action print" onclick="window.print()">🖨 Print / Save PDF</button>
+        <button class="btn-action" onclick="copyNote()">Copy Text</button>
+      </div>
+    </div>
+    <div class="output-body" id="output-body"></div>
+    <div class="output-footer">⚠️ Review all AI-generated content before signing. This tool supports documentation — it does not replace clinical judgment.</div>
+  </div>
+
+  <div class="hipaa-banner"><strong>HIPAA Notice:</strong> Do not enter real patient names or identifying information until you have a signed Business Associate Agreement (BAA) with Anthropic. Use patient initials or ID numbers only.</div>
+
+</div>
+
+<script>
+  var LOGO_SRC="data:image/png;base64,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";document.addEventListener("DOMContentLoaded",function(){document.querySelectorAll(".logo-img").forEach(function(i){i.src=LOGO_SRC;})});
+  let currentTab = 'eval';
+  let apiKey = '';
+
+  function saveApiKey() {
+    const val = document.getElementById('api-key-input').value.trim();
+    if (!val.startsWith('sk-ant-')) { alert('That does not look like a valid Anthropic API key. It should start with sk-ant-'); return; }
+    apiKey = val;
+    document.getElementById('api-banner').style.display = 'none';
+  }
+
+  function switchTab(tab, el) {
+    currentTab = tab;
+    document.querySelectorAll('.note-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('section-' + tab).classList.add('active');
+    document.getElementById('output-card').classList.remove('visible');
+    document.getElementById('status-msg').textContent = '';
+  }
+
+  function toggleAccordion(header) {
+    const body = header.nextElementSibling;
+    const isOpen = header.classList.contains('open');
+    header.classList.toggle('open', !isOpen);
+    header.querySelector('.accordion-chevron').textContent = isOpen ? '▼' : '▲';
+    body.classList.toggle('open', !isOpen);
+  }
+
+  function toggleBp(header) {
+    const body = header.nextElementSibling;
+    const isOpen = header.classList.contains('open');
+    header.classList.toggle('open', !isOpen);
+    header.querySelector('.bp-chevron').textContent = isOpen ? '▼' : '▲';
+    body.classList.toggle('open', !isOpen);
+  }
+
+  function g(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
+  function chk(id) { const el = document.getElementById(id); return el && el.checked; }
+  function today() { return new Date().toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' }); }
+
+  function collectPosture() {
+    const checks = [];
+    if(chk('post-forward-head')) checks.push('Forward head posture');
+    if(chk('post-kyphosis')) checks.push('Increased thoracic kyphosis');
+    if(chk('post-lordosis')) checks.push('Increased lumbar lordosis');
+    if(chk('post-flat')) checks.push('Flattened lumbar lordosis');
+    if(chk('post-scoliosis')) checks.push('Scoliosis/lateral shift');
+    if(chk('post-shoulder')) checks.push('Shoulder elevation/asymmetry');
+    if(chk('post-pelvis')) checks.push('Pelvic tilt/asymmetry');
+    if(chk('post-wnl')) checks.push('WNL');
+    const n = g('post-notes');
+    return checks.length ? checks.join(', ') + (n ? '. ' + n : '') : n || 'Not assessed';
+  }
+
+  function collectGait() {
+    const checks = [];
+    if(chk('gait-antalgic')) checks.push('Antalgic gait');
+    if(chk('gait-trendelenburg')) checks.push('Trendelenburg gait');
+    if(chk('gait-steppage')) checks.push('Steppage gait');
+    if(chk('gait-ataxic')) checks.push('Ataxic gait');
+    if(chk('gait-reduced-arm')) checks.push('Reduced arm swing');
+    if(chk('gait-reduced-stride')) checks.push('Reduced stride length');
+    if(chk('gait-assistive')) checks.push('Requires assistive device');
+    if(chk('gait-wnl')) checks.push('WNL');
+    const n = g('gait-notes');
+    return checks.length ? checks.join(', ') + (n ? '. ' + n : '') : n || 'Not assessed';
+  }
+
+  function collectROM() {
+    const rows = [];
+    const spine = [];
+    if(g('lum-flex')||g('lum-ext')||g('lum-lf-l')||g('lum-rot-l')) {
+      spine.push('Lumbar: Flex=' + (g('lum-flex')||'—') + ' Ext=' + (g('lum-ext')||'—') + ' LF-L=' + (g('lum-lf-l')||'—') + ' LF-R=' + (g('lum-lf-r')||'—') + ' Rot-L=' + (g('lum-rot-l')||'—') + ' Rot-R=' + (g('lum-rot-r')||'—') + (g('lum-notes') ? ' ('+g('lum-notes')+')':''));
+    }
+    if(g('cer-flex')||g('cer-ext')) {
+      spine.push('Cervical: Flex=' + (g('cer-flex')||'—') + ' Ext=' + (g('cer-ext')||'—') + ' LF-L=' + (g('cer-lf-l')||'—') + ' LF-R=' + (g('cer-lf-r')||'—') + ' Rot-L=' + (g('cer-rot-l')||'—') + ' Rot-R=' + (g('cer-rot-r')||'—') + (g('cer-notes') ? ' ('+g('cer-notes')+')':''));
+    }
+    if(g('thor-flex')||g('thor-ext')) {
+      spine.push('Thoracic: Flex=' + (g('thor-flex')||'—') + ' Ext=' + (g('thor-ext')||'—') + ' Rot-L=' + (g('thor-rot-l')||'—') + ' Rot-R=' + (g('thor-rot-r')||'—') + (g('thor-notes') ? ' ('+g('thor-notes')+')':''));
+    }
+    if(g('sh-flex-l')||g('sh-flex-r')) {
+      spine.push('Shoulder: Flex L=' + (g('sh-flex-l')||'—') + '/R=' + (g('sh-flex-r')||'—') + ' Abd L=' + (g('sh-abd-l')||'—') + '/R=' + (g('sh-abd-r')||'—') + ' IR L=' + (g('sh-ir-l')||'—') + '/R=' + (g('sh-ir-r')||'—') + ' ER L=' + (g('sh-er-l')||'—') + '/R=' + (g('sh-er-r')||'—') + (g('sh-notes') ? ' ('+g('sh-notes')+')':''));
+    }
+    if(g('el-flex-l')||g('el-flex-r')) {
+      spine.push('Elbow: Flex L=' + (g('el-flex-l')||'—') + '/R=' + (g('el-flex-r')||'—') + ' Pro L=' + (g('el-pro-l')||'—') + '/R=' + (g('el-pro-r')||'—') + (g('el-notes') ? ' ('+g('el-notes')+')':''));
+    }
+    if(g('wr-flex-l')||g('wr-flex-r')) {
+      spine.push('Wrist: Flex L=' + (g('wr-flex-l')||'—') + '/R=' + (g('wr-flex-r')||'—') + ' Ext L=' + (g('wr-ext-l')||'—') + '/R=' + (g('wr-ext-r')||'—') + (g('wr-notes') ? ' ('+g('wr-notes')+')':''));
+    }
+    if(g('hip-flex-l')||g('hip-flex-r')) {
+      spine.push('Hip: Flex L=' + (g('hip-flex-l')||'—') + '/R=' + (g('hip-flex-r')||'—') + ' Ext L=' + (g('hip-ext-l')||'—') + '/R=' + (g('hip-ext-r')||'—') + ' Abd L=' + (g('hip-abd-l')||'—') + '/R=' + (g('hip-abd-r')||'—') + ' IR L=' + (g('hip-ir-l')||'—') + '/R=' + (g('hip-ir-r')||'—') + ' ER L=' + (g('hip-er-l')||'—') + '/R=' + (g('hip-er-r')||'—') + (g('hip-notes') ? ' ('+g('hip-notes')+')':''));
+    }
+    if(g('kn-flex-l')||g('kn-flex-r')) {
+      spine.push('Knee: Flex L=' + (g('kn-flex-l')||'—') + '/R=' + (g('kn-flex-r')||'—') + ' Ext L=' + (g('kn-ext-l')||'—') + '/R=' + (g('kn-ext-r')||'—') + (g('kn-notes') ? ' ('+g('kn-notes')+')':''));
+    }
+    if(g('ank-df-l')||g('ank-df-r')) {
+      spine.push('Ankle: DF L=' + (g('ank-df-l')||'—') + '/R=' + (g('ank-df-r')||'—') + ' PF L=' + (g('ank-pf-l')||'—') + '/R=' + (g('ank-pf-r')||'—') + (g('ank-notes') ? ' ('+g('ank-notes')+')':''));
+    }
+    return spine.length ? spine.join('; ') : 'Not assessed';
+  }
+
+  function collectMMT() {
+    const results = [];
+    const groups = [
+      ['Abdominals','mmt-abd'],['Back Extensors','mmt-bext'],
+      ['Shoulder Flexors','mmt-shf'],['Shoulder Abductors','mmt-sha'],
+      ['Elbow Flexors','mmt-elf'],['Grip Strength','mmt-grip'],
+      ['Hip Flexors','mmt-hipf'],['Hip Extensors','mmt-hipe'],['Hip Abductors','mmt-hipa'],
+      ['Quad (Knee Ext)','mmt-kne'],['Hamstrings (Knee Flex)','mmt-knf'],
+      ['Ankle Dorsiflexors','mmt-ankd'],['Ankle Plantarflexors','mmt-ankp']
+    ];
+    groups.forEach(([name, id]) => {
+      const l = g(id+'-l'), r = g(id+'-r'), n = g(id+'-n');
+      if(l || r) results.push(name + ': L=' + (l||'—') + ' R=' + (r||'—') + (n?' ('+n+')':''));
+    });
+    return results.length ? results.join('; ') : 'Not assessed';
+  }
+
+  function collectSpecialTests() {
+    const tests = [
+      ['SLR','st-slr'],['Slump Test','st-slump'],["Spurling's",'st-spurling'],
+      ['FABER','st-faber'],['FADIR','st-fadir'],["Hawkins-Kennedy",'st-hawk'],
+      ["Neer's Sign",'st-neer'],["McMurray's",'st-mcm'],["Lachman's",'st-lach']
+    ];
+    const results = [];
+    tests.forEach(([name, id]) => {
+      const v = g(id), n = g(id+'-n');
+      if(v) results.push(name + ': ' + v + (n ? ' — ' + n : ''));
+    });
+    const other = g('st-other');
+    if(other) results.push(other);
+    return results.length ? results.join('; ') : 'Not assessed';
+  }
+
+  function collectSensation() {
+    const checks = [];
+    if(chk('sens-intact')) checks.push('Intact throughout');
+    if(chk('sens-reduced')) checks.push('Reduced sensation');
+    if(chk('sens-absent')) checks.push('Absent sensation');
+    if(chk('sens-paresthesia')) checks.push('Paresthesia/tingling');
+    if(chk('sens-numbness')) checks.push('Numbness');
+    if(chk('sens-reflexes')) checks.push('Reflexes WNL');
+    const n = g('sens-notes');
+    return checks.length ? checks.join(', ') + (n ? '. ' + n : '') : n || 'Not assessed';
+  }
+
+  function collectPalpation() {
+    const checks = [];
+    if(chk('palp-tender')) checks.push('Point tenderness');
+    if(chk('palp-spasm')) checks.push('Muscle spasm');
+    if(chk('palp-tightness')) checks.push('Soft tissue tightness');
+    if(chk('palp-trigger')) checks.push('Trigger points');
+    if(chk('palp-edema')) checks.push('Edema/swelling');
+    if(chk('palp-warmth')) checks.push('Warmth/inflammation');
+    const n = g('palp-notes');
+    return checks.length ? checks.join(', ') + (n ? '. ' + n : '') : n || 'Not assessed';
+  }
+
+  function collectFunctionalMobility() {
+    const tasks = [
+      ['Sit to Stand','fm-sts'],['Ambulation','fm-amb'],['Stairs','fm-stair'],['Bed Mobility','fm-bed']
+    ];
+    const results = [];
+    tasks.forEach(([name, id]) => {
+      const v = g(id), n = g(id+'-n');
+      if(v && v !== '—') results.push(name + ': ' + v + (n ? ' (' + n + ')' : ''));
+    });
+    const notes = g('fm-notes');
+    if(notes) results.push(notes);
+    return results.length ? results.join('; ') : 'Not assessed';
+  }
+
+  function collectBalance() {
+    const checks = [];
+    if(chk('bal-static-intact')) checks.push('Static balance intact');
+    if(chk('bal-dynamic-intact')) checks.push('Dynamic balance intact');
+    if(chk('bal-static-impaired')) checks.push('Static balance impaired');
+    if(chk('bal-dynamic-impaired')) checks.push('Dynamic balance impaired');
+    if(chk('bal-romberg')) checks.push('Romberg positive');
+    if(chk('bal-fall-risk')) checks.push('Fall risk identified');
+    const n = g('bal-notes');
+    return checks.length ? checks.join(', ') + (n ? '. ' + n : '') : n || 'Not assessed';
+  }
+
+  function collectEdema() {
+    const checks = [];
+    if(chk('edema-none')) checks.push('No edema');
+    if(chk('edema-mild')) checks.push('Mild edema');
+    if(chk('edema-mod')) checks.push('Moderate edema');
+    if(chk('edema-severe')) checks.push('Severe edema');
+    if(chk('edema-pitting')) checks.push('Pitting');
+    if(chk('edema-non-pitting')) checks.push('Non-pitting');
+    const n = g('edema-notes');
+    return checks.length ? checks.join(', ') + (n ? '. ' + n : '') : n || 'Not assessed';
+  }
+
+  function collectSkin() {
+    const checks = [];
+    if(chk('skin-intact')) checks.push('Skin intact');
+    if(chk('skin-scar')) checks.push('Surgical scar present');
+    if(chk('skin-wound')) checks.push('Open wound');
+    if(chk('skin-bruising')) checks.push('Bruising/ecchymosis');
+    if(chk('skin-redness')) checks.push('Redness/erythema');
+    if(chk('skin-na')) checks.push('Not assessed');
+    const n = g('skin-notes');
+    return checks.length ? checks.join(', ') + (n ? '. ' + n : '') : n || 'Not assessed';
+  }
+
+  function buildPrompt() {
+    const system = `You are a licensed physical therapist generating clinical documentation for Healing Institute of Physical Therapy. Your notes must:
+- Use standard PT abbreviations and medical terminology
+- Include strong medical necessity language justifying skilled PT services
+- Reference functional deficits and their impact on ADLs, work, and quality of life
+- Use objective measurable data to support clinical decision-making
+- Be compliant with Medicare and commercial insurance payer requirements
+- Include relevant CPT codes
+- Use ALL CAPS for section headers
+- Be professional, concise, and legally defensible`;
+
+    const date = today();
+
+    if(currentTab === 'eval') {
+      const objData = `Posture: ${collectPosture()}
+Gait: ${collectGait()}
+ROM: ${collectROM()}
+MMT: ${collectMMT()}
+Special Tests: ${collectSpecialTests()}
+Sensation/Neuro: ${collectSensation()}
+Palpation: ${collectPalpation()}
+Functional Mobility: ${collectFunctionalMobility()}
+Balance: ${collectBalance()}
+Edema: ${collectEdema()}
+Skin/Wound: ${collectSkin()}`;
+
+      return { system, user: `Generate a complete Initial Evaluation note. Date: ${date}
+
+PATIENT: ${g('e-name')} | VISIT DATE: ${g('e-date')}
+DIAGNOSIS: ${g('e-dx')}
+REFERRING MD: ${g('e-md')}
+
+SUBJECTIVE:
+Chief Complaint/MOI: ${g('e-cc')}
+Pain: ${g('e-pain')} | Quality: ${g('e-pq')}
+Functional Limitations: ${g('e-func')}
+Prior Level of Function: ${g('e-plof')}
+Past Medical History: ${g('e-pmh')}
+
+OBJECTIVE:
+${objData}
+
+PLAN OF CARE: ${g('e-freq')} x ${g('e-dur')}
+
+Generate sections: DATE OF SERVICE, PATIENT INFORMATION, REFERRAL, SUBJECTIVE (use all clinical findings data above), OBJECTIVE EXAMINATION (format ROM as a structured table with normal values for comparison, present all measurements provided), ASSESSMENT (include medical necessity statement justifying skilled PT), SHORT-TERM GOALS (3-4 SMART goals, 2-3 week timeframe), LONG-TERM GOALS (3-4 SMART goals, discharge timeframe), PLAN OF CARE, THERAPIST SIGNATURE LINE, CPT CODES BILLED.` };
+    }
+
+    if(currentTab === 'soap') {
+      return { system, user: `Generate a complete daily SOAP note. Date: ${date}
+PATIENT: ${g('s-name')} | ${g('s-visit')} | DX: ${g('s-dx')}
+S: ${g('s-sub')}
+O: ${g('s-obj')}
+Response: ${g('s-resp')} | Progress: ${g('s-prog')}
+Plan: ${g('s-plan')}
+Include: DATE, PATIENT/VISIT INFO, SUBJECTIVE, OBJECTIVE (interventions with time/parameters), ASSESSMENT (skilled care justification), PLAN, SIGNATURE LINE, CPT CODES.` };
+    }
+
+    if(currentTab === 'progress') {
+      return { system, user: `Generate a Progress Note for insurance authorization. Date: ${date}
+PATIENT: ${g('p-name')} | PERIOD: ${g('p-dates')} | DX: ${g('p-dx')} | PAYER: ${g('p-ins')}
+GOALS: ${g('p-goals')}
+MEASUREMENTS: ${g('p-meas')}
+BARRIERS: ${g('p-barriers')}
+JUSTIFICATION: ${g('p-just')}
+Include: DATE, PATIENT/PERIOD, DIAGNOSIS, TREATMENT SUMMARY, GOAL STATUS, OBJECTIVE PROGRESS, CLINICAL IMPRESSION (strong medical necessity for continued PT), UPDATED PLAN, SIGNATURE LINE, CPT CODES.` };
+    }
+
+    if(currentTab === 'discharge') {
+      return { system, user: `Generate a Discharge Summary. Date: ${date}
+PATIENT: ${g('d-name')} | TOTAL CARE: ${g('d-visits')} | DX: ${g('d-dx')} | STATUS: ${g('d-status')}
+OUTCOMES: ${g('d-outcomes')}
+GOALS: ${g('d-goals')}
+HEP: ${g('d-hep')}
+RECOMMENDATIONS: ${g('d-rec')}
+Include: DATE, PATIENT INFO, EPISODE SUMMARY, INITIAL vs DISCHARGE STATUS, GOAL ACHIEVEMENT, FUNCTIONAL OUTCOMES, HEP, PATIENT EDUCATION, DISCHARGE DISPOSITION, SIGNATURE LINE, FINAL CPT CODES.` };
+    }
+  }
+
+  async function generate() {
+    if(!apiKey) { document.getElementById('status-msg').textContent = 'Please enter your API key at the top of the page first.'; document.getElementById('status-msg').className = 'status-msg error'; return; }
+    const btn = document.getElementById('gen-btn');
+    const status = document.getElementById('status-msg');
+    const outputCard = document.getElementById('output-card');
+    btn.disabled = true; btn.classList.add('loading');
+    status.textContent = 'Generating your note — this takes about 15–20 seconds…';
+    status.className = 'status-msg';
+    outputCard.classList.remove('visible');
+    try {
+      const prompt = buildPrompt();
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+        body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 1800, system: prompt.system, messages: [{ role: 'user', content: prompt.user }] })
+      });
+      if(!response.ok) { const err = await response.json(); throw new Error(err.error?.message || 'API error ' + response.status); }
+      const data = await response.json();
+      const text = data.content.map(b => b.text || '').join('');
+      const titles = { eval: 'Initial Evaluation', soap: 'SOAP Note', progress: 'Progress Note', discharge: 'Discharge Summary' };
+      const patientId = g('e-name') || g('s-name') || g('p-name') || g('d-name') || 'Patient';
+      document.getElementById('output-title').textContent = titles[currentTab];
+      document.getElementById('output-meta').textContent = patientId + ' · Generated ' + today();
+      document.getElementById('output-body').textContent = text;
+      outputCard.classList.add('visible');
+      outputCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      status.textContent = 'Note generated. Review carefully before signing.';
+      status.className = 'status-msg';
+    } catch(err) {
+      status.textContent = 'Error: ' + err.message + ' — Check your API key and try again.';
+      status.className = 'status-msg error';
+    } finally {
+      btn.disabled = false; btn.classList.remove('loading');
+    }
+  }
+
+  async function copyNote() {
+    const text = document.getElementById('output-body').textContent;
+    try {
+      await navigator.clipboard.writeText(text);
+      const btn = event.target;
+      btn.textContent = '✓ Copied!';
+      setTimeout(() => btn.textContent = 'Copy Text', 2000);
+    } catch { alert('Select the text manually and press Ctrl+C.'); }
+  }
+</script>
+</body>
+</html>
